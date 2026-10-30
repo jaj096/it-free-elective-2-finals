@@ -1,0 +1,12 @@
+{
+  "name": "Certificate Queue",
+  "short_name": "Certificates",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#1E4E8C",
+  "description": "Certificate Generation Queue - class project (fictional data only)",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": []
+}
