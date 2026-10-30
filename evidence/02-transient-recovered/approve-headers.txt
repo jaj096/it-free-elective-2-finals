@@ -1,0 +1,12 @@
+HTTP/1.1 202 Accepted
+Host: localhost:8000
+Connection: close
+X-Powered-By: PHP/8.5.9
+Cache-Control: no-cache, private
+Date: Fri, 30 Oct 2026 15:34:49 GMT
+Content-Type: application/json
+X-RateLimit-Limit: 120
+X-RateLimit-Remaining: 115
+Vary: Origin
+X-Correlation-ID: c-kxmr3i99
+

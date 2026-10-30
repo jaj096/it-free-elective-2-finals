@@ -1,0 +1,2 @@
+Dispatched 3 copies of the job for request #1 (status: generated).
+Run the worker, then check: certificates for this request must be exactly 1.

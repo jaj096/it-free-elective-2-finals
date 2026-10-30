@@ -1,0 +1,7 @@
+# expected -> actual (HTTP)
+no token (expect 401) -> 401
+missing certificate type (expect 422) -> 422
+requester approves (expect 403) -> 403
+approve twice (expect 409) -> 409
+other requester's request (expect 404) -> 404
+download before release (expect 403) -> 403

@@ -1,0 +1,1 @@
+{"status":"ok","checks":{"database":"ok","generator":"ok"},"metrics":{"queue_depth":0,"failed_jobs":3,"needs_review":2},"time":"2026-10-30T23:36:44+08:00"}
