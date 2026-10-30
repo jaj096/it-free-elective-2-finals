@@ -81,8 +81,8 @@ class AsyncViewState<T> extends State<AsyncView<T>> {
   @override
   Widget build(BuildContext context) {
     if (_loading && _data == null) {
-      return const Center(
-        child: Semantics(label: 'Loading', child: CircularProgressIndicator()),
+      return Center(
+        child: Semantics(label: 'Loading', child: const CircularProgressIndicator()),
       );
     }
 

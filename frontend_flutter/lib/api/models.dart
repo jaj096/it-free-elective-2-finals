@@ -1,5 +1,5 @@
-/// Plain data classes for API responses. Parsing is defensive: missing fields
-/// fall back to safe defaults instead of crashing the UI.
+// Plain data classes for API responses. Parsing is defensive: missing fields
+// fall back to safe defaults instead of crashing the UI.
 
 String _s(dynamic v, [String fallback = '']) => v == null ? fallback : v.toString();
 int _i(dynamic v, [int fallback = 0]) => v is int ? v : int.tryParse('${v ?? ''}') ?? fallback;
