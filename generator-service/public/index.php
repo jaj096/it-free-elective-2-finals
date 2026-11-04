@@ -18,12 +18,19 @@ declare(strict_types=1);
  * The .env file is re-read on every request, so the mode can be switched
  * without restarting the server.
  *
+ * Week 14: every /generate call must be signed (HMAC-SHA256), fresh (5 min),
+ * single-use (nonce) and carry the personal fields encrypted with
+ * XChaCha20-Poly1305. See src/SecureReceiver.php. Plain HTTP is refused when
+ * GENERATOR_REQUIRE_HTTPS=true (Caddy terminates TLS in front of this server).
+ *
  * Run: php -S 127.0.0.1:8081 -t public public/index.php
+ * Tests may point to another config/storage with GENERATOR_ENV_FILE and GENERATOR_STORAGE_DIR.
  */
 
 require __DIR__ . '/../src/MinimalPdf.php';
+require __DIR__ . '/../src/SecureReceiver.php';
 
-const STORAGE = __DIR__ . '/../storage';
+define('STORAGE', getenv('GENERATOR_STORAGE_DIR') ?: __DIR__ . '/../storage');
 const ALLOWED_TYPES = [
     'enrollment' => 'Certificate of Enrollment',
     'good_moral' => 'Certificate of Good Moral Character',
@@ -35,10 +42,12 @@ function env_config(): array
 {
     $defaults = [
         'GENERATOR_MODE' => 'success',
-        'GENERATOR_SERVICE_KEY' => '',
         'GENERATOR_SLOW_SECONDS' => '15',
+        'GENERATOR_REQUIRE_HTTPS' => 'true',
+        'GENERATOR_MAX_SKEW_SECONDS' => '300',
+        'GENERATOR_ACCEPTED_KEY_IDS' => '',
     ];
-    $file = __DIR__ . '/../.env';
+    $file = getenv('GENERATOR_ENV_FILE') ?: __DIR__ . '/../.env';
     if (is_file($file)) {
         foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
             $line = trim($line);
@@ -63,9 +72,37 @@ function respond(int $status, array $body): never
 
 function log_line(array $fields): void
 {
-    // Structured log to stderr; never includes the service key or names.
+    // Structured log to stderr and storage/generator.log.
+    // Never includes keys, signatures, ciphertext, names or ID numbers.
     $fields = ['timestamp' => date('c'), 'service' => 'generator'] + $fields;
-    file_put_contents('php://stderr', json_encode($fields, JSON_UNESCAPED_SLASHES) . PHP_EOL);
+    $line = json_encode($fields, JSON_UNESCAPED_SLASHES) . PHP_EOL;
+    file_put_contents('php://stderr', $line);
+    file_put_contents(STORAGE . '/generator.log', $line, FILE_APPEND | LOCK_EX);
+}
+
+/** True if this request arrived over TLS (directly, or via the local Caddy proxy). */
+function arrived_over_https(): bool
+{
+    if (($_SERVER['HTTPS'] ?? '') === 'on') {
+        return true;
+    }
+    // Only trust the proxy header from the proxy on this machine.
+    $fromLocalProxy = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true);
+
+    return $fromLocalProxy && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+}
+
+/** @return array<string, string> request headers with lower-case names */
+function request_headers(): array
+{
+    $headers = [];
+    foreach ($_SERVER as $name => $value) {
+        if (str_starts_with($name, 'HTTP_') && is_string($value)) {
+            $headers[strtolower(str_replace('_', '-', substr($name, 5)))] = $value;
+        }
+    }
+
+    return $headers;
 }
 
 /** Counts calls per job_key so fail_twice_then_succeed can fail exactly twice. */
@@ -90,7 +127,8 @@ $config = env_config();
 $mode = $config['GENERATOR_MODE'];
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-$correlationId = $_SERVER['HTTP_X_CORRELATION_ID'] ?? null;
+// The correlation ID comes from the caller, so only keep it if it looks like one (no log injection).
+$correlationId = preg_match('/^[A-Za-z0-9-]{8,64}$/', $_SERVER['HTTP_X_CORRELATION_ID'] ?? '') ? $_SERVER['HTTP_X_CORRELATION_ID'] : null;
 
 if ($method === 'GET' && $path === '/health') {
     respond(200, ['status' => 'ok', 'mode' => $mode]);
@@ -100,22 +138,36 @@ if ($method !== 'POST' || $path !== '/generate') {
     respond(404, ['error' => ['code' => 'NOT_FOUND', 'message' => 'Unknown endpoint.']]);
 }
 
-// 1. Authenticate the caller with the shared service key (from .env, never in code).
-$expectedKey = $config['GENERATOR_SERVICE_KEY'];
-$givenKey = $_SERVER['HTTP_X_SERVICE_KEY'] ?? '';
-if ($expectedKey === '' || !hash_equals($expectedKey, $givenKey)) {
-    log_line(['event' => 'auth.rejected', 'correlation_id' => $correlationId]);
-    respond(401, ['error' => ['code' => 'UNAUTHENTICATED', 'message' => 'Invalid service key.']]);
+// 1. Transport: personal data must only arrive over HTTPS.
+if (filter_var($config['GENERATOR_REQUIRE_HTTPS'], FILTER_VALIDATE_BOOL) && !arrived_over_https()) {
+    log_line(['event' => 'security.rejected', 'reason' => 'HTTPS_REQUIRED', 'correlation_id' => $correlationId]);
+    respond(403, ['error' => ['code' => 'HTTPS_REQUIRED', 'message' => 'Use HTTPS.']]);
 }
 
-// 2. Validate input.
-$input = json_decode(file_get_contents('php://input') ?: '', true);
-if (!is_array($input)) {
-    respond(400, ['error' => ['code' => 'BAD_REQUEST', 'message' => 'Body must be JSON.']]);
+// 2. Authenticity, integrity, freshness, single use, then decryption (see src/SecureReceiver.php).
+$receiver = new SecureReceiver(
+    SecureReceiver::keysFromConfig($config),
+    new NonceStore(STORAGE . '/nonces.json', 2 * (int) $config['GENERATOR_MAX_SKEW_SECONDS']),
+    (int) $config['GENERATOR_MAX_SKEW_SECONDS'],
+);
+try {
+    $input = $receiver->open($method, $path, request_headers(), file_get_contents('php://input') ?: '');
+} catch (RejectedRequest $e) {
+    // Safe log line: reason code, key ID (not secret) and correlation ID only.
+    log_line(array_filter([
+        'event' => 'security.rejected',
+        'reason' => $e->reason,
+        'http_status' => $e->status,
+        'key_id' => $e->keyId,
+        'correlation_id' => $correlationId,
+    ], fn ($v) => $v !== null));
+    respond($e->status, ['error' => ['code' => $e->reason, 'message' => $e->getMessage()]]);
 }
+
+// 3. Validate the (now decrypted) input.
 $errors = [];
 foreach (['job_key', 'certificate_type', 'requester_name', 'requester_id_number', 'purpose'] as $field) {
-    if (!isset($input[$field]) || !is_string($input[$field]) || trim($input[$field]) === '') {
+    if (trim($input[$field]) === '') {
         $errors[$field] = 'Required.';
     }
 }
@@ -131,7 +183,7 @@ $jobKey = preg_replace('/[^A-Za-z0-9-]/', '', $input['job_key']);
 $attempt = bump_attempts($jobKey);
 $pdfFile = STORAGE . "/pdf/{$jobKey}.pdf";
 
-// 3. Idempotency: the same job_key always returns the same PDF once produced.
+// 4. Idempotency: the same job_key always returns the same PDF once produced.
 if (is_file($pdfFile)) {
     log_line(['event' => 'generate.replayed', 'job_key' => $jobKey, 'correlation_id' => $correlationId]);
     respond(201, [
@@ -141,7 +193,7 @@ if (is_file($pdfFile)) {
     ]);
 }
 
-// 4. Injected failure modes for testing.
+// 5. Injected failure modes for testing.
 switch ($mode) {
     case 'always_503':
         log_line(['event' => 'generate.unavailable', 'mode' => $mode, 'job_key' => $jobKey, 'attempt' => $attempt]);
@@ -160,7 +212,7 @@ switch ($mode) {
         break;
 }
 
-// 5. Render the certificate.
+// 6. Render the certificate.
 $title = ALLOWED_TYPES[$input['certificate_type']];
 $pdf = MinimalPdf::render([
     ['text' => 'UNIVERSITY OF LA SALETTE, INC. (SAMPLE)', 'size' => 14, 'y' => 700],

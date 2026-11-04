@@ -7,12 +7,25 @@
 return [
 
     'generator' => [
-        // Base URL of the Certificate Generator Service, e.g. http://127.0.0.1:8081
-        'url' => env('GENERATOR_URL', 'http://127.0.0.1:8081'),
-        // Shared secret sent as X-Service-Key. Never commit the real value.
-        'key' => env('GENERATOR_SERVICE_KEY'),
+        // Base URL of the Certificate Generator Service. Week 14: HTTPS through Caddy, e.g. https://localhost:8444
+        'url' => env('GENERATOR_URL', 'https://localhost:8444'),
         // Seconds to wait for the generator before treating the call as a transient timeout.
         'timeout' => (int) env('GENERATOR_TIMEOUT', 10),
+
+        // --- Week 14: secure exchange (see app/Security) ---
+        // Refuse to send personal data unless GENERATOR_URL is https://.
+        'require_https' => filter_var(env('GENERATOR_REQUIRE_HTTPS', true), FILTER_VALIDATE_BOOL),
+        // PEM file of the local development CA used to verify the generator's certificate.
+        // Empty = use the system trust store. TLS verification is never disabled.
+        'ca_bundle' => env('GENERATOR_CA_BUNDLE'),
+        // Current key pair. Sent as X-Key-Id; the receiver may accept several IDs during rotation.
+        'key_id' => env('GENERATOR_KEY_ID'),
+        // XChaCha20-Poly1305 key for requester_name + requester_id_number (base64: + 32 bytes).
+        'encryption_key' => env('GENERATOR_ENCRYPTION_KEY'),
+        // HMAC-SHA256 key for request signatures (base64: + 32 bytes). Must differ from the encryption key.
+        'signing_key' => env('GENERATOR_SIGNING_KEY'),
+        // Plain-HTTP address of the generator, used ONLY by generator:security-test to prove it is refused.
+        'plain_http_url' => env('GENERATOR_PLAIN_HTTP_URL', 'http://127.0.0.1:8081'),
     ],
 
     'retry' => [

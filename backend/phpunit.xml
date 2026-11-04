@@ -29,7 +29,11 @@
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="database"/>
         <env name="GENERATOR_URL" value="http://generator.test"/>
-        <env name="GENERATOR_SERVICE_KEY" value="test-key"/>
+        <env name="GENERATOR_REQUIRE_HTTPS" value="false"/>
+        <env name="GENERATOR_CA_BUNDLE" value=""/>
+        <env name="GENERATOR_KEY_ID" value="ktest"/>
+        <env name="GENERATOR_ENCRYPTION_KEY" value="base64:VEVTVC1FTkNSWVBUSU9OLUtFWS0wMDAwMDAwMDAwMDA="/>
+        <env name="GENERATOR_SIGNING_KEY" value="base64:VEVTVC1TSUdOSU5HLUtFWS0wMDAwMDAwMDAwMDAwMDA="/>
         <env name="CERT_RETRY_BACKOFF" value="0,0"/>
         <env name="CERT_RETRY_JITTER" value="0"/>
         <env name="SESSION_DRIVER" value="array"/>

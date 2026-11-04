@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Enums\RequestStatus;
 use App\Http\Controllers\Controller;
 use App\Models\CertificateRequest;
+use App\Services\GeneratorClient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Throwable;
 
 /**
@@ -28,7 +28,7 @@ class HealthController extends Controller
         }
 
         try {
-            $generator = Http::timeout(2)->get(rtrim((string) config('certificates.generator.url'), '/').'/health');
+            $generator = GeneratorClient::http()->timeout(2)->get('/health');
             $checks['generator'] = $generator->successful() ? 'ok' : 'degraded';
         } catch (Throwable) {
             $checks['generator'] = 'down';

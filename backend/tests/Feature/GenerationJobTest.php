@@ -65,7 +65,8 @@ class GenerationJobTest extends TestCase
         $this->assertSame(1, Certificate::where('certificate_request_id', $request->id)->count());
         Storage::disk('local')->assertExists($request->certificate->file_path);
         $this->assertSame(hash('sha256', "%PDF-1.4\n%test\n"), $request->certificate->sha256);
-        Http::assertSent(fn ($r) => $r->hasHeader('X-Service-Key', 'test-key') && $r['job_key'] === $request->generation_key);
+        // Week 14: the old shared X-Service-Key was replaced by a signed request (key ID + HMAC signature).
+        Http::assertSent(fn ($r) => $r->hasHeader('X-Key-Id', 'ktest') && $r->hasHeader('X-Signature') && $r['job_key'] === $request->generation_key);
     }
 
     public function test_transient_failure_is_retried_and_recovers(): void
