@@ -6,16 +6,16 @@ re-run the script and update this table if anything changes. Keep any failures; 
 
 | File | What it proves | Expected | Actual |
 | --- | --- | --- | --- |
-| `01-transport.txt` | TLS 1.2/1.3 with a verified certificate, HSTS; untrusted CA refused; plain HTTP refused by API, login and generator | TLS ok, `verify ok`, curl exit 60, 3 × 403 `HTTPS_REQUIRED` || TLSv1.3, `verify ok`, HSTS; curl exit 60; 403 / 403 / 403 ✅ |
-| `02-wire-sample.json` | The exact request the worker sends: minimised fields, name and ID number only as ciphertext, signature headers | no plaintext name/ID || only `v, job_key, certificate_type, purpose, protected`; no plaintext ✅ |
-| `03-security-test.txt` / `.json` | Failure injection: altered ciphertext, bad signature, expired timestamp, replayed nonce, wrong key ID, plain HTTP | 400 / 401 / 401 / 409 / 401 / 403, all PASS || 400 / 401 / 401 / 409 / 401 / 403, 7/7 PASS ✅ |
-| `04-generator-rejection-log.jsonl` | Receiver logs each rejection safely (reason, key ID, correlation ID; no keys, no personal data) | 6 `security.rejected` lines || 6 lines, fields: reason, http_status, key_id, correlation_id ✅ |
-| `04-backend-security-test-log.jsonl` | Same correlation ID in the backend log (traceability across both services) | 7 `security_test.case` lines || 7 lines, same correlation ID ✅ |
-| `05-db-at-rest.txt` | `users.id_number` stored as Laravel ciphertext; passwords stored as bcrypt (`$2y$`) | 0 plaintext ID rows || 200-char ciphertext, `$2y$12$`, 0 plaintext rows ✅ |
-| `06-api-controls.txt` | Expired Sanctum token, invalid token, no token, role check, validation, rate limit, masked ID | 401 TOKEN_EXPIRED, 401, 401, 403, 422, 429, `2026-***01` || 401 TOKEN_EXPIRED, 401, 401, 403, 422, 429, `2026-***01` ✅ |
-| `07-secret-scan.txt` | Logs + git-tracked files contain no real keys, APP_KEY, tokens, names or ID numbers | no findings || no secrets or personal data found ✅ |
-| `08-backend-tests.txt` | Full automated suite (Week 13 + Week 14) | all pass || 58 passed ✅ |
-| `run-info.txt` | When and on which commit the evidence was produced | — || 2026-11-04 08:57 +0800 |
+| `01-transport.txt` | TLS 1.2/1.3 with a verified certificate, HSTS; untrusted CA refused; plain HTTP refused by API, login and generator | TLS ok, `verify ok`, curl exit 60, 3 × 403 `HTTPS_REQUIRED` | TLSv1.3, `verify ok`, HSTS; curl exit 60; 403 / 403 / 403 ✅ |
+| `02-wire-sample.json` | The exact request the worker sends: minimised fields, name and ID number only as ciphertext, signature headers | no plaintext name/ID | only `v, job_key, certificate_type, purpose, protected`; no plaintext ✅ |
+| `03-security-test.txt` / `.json` | Failure injection: altered ciphertext, bad signature, expired timestamp, replayed nonce, wrong key ID, plain HTTP | 400 / 401 / 401 / 409 / 401 / 403, all PASS | 400 / 401 / 401 / 409 / 401 / 403, 7/7 PASS ✅ |
+| `04-generator-rejection-log.jsonl` | Receiver logs each rejection safely (reason, key ID, correlation ID; no keys, no personal data) | 6 `security.rejected` lines | 6 lines, fields: reason, http_status, key_id, correlation_id ✅ |
+| `04-backend-security-test-log.jsonl` | Same correlation ID in the backend log (traceability across both services) | 7 `security_test.case` lines | 7 lines, same correlation ID ✅ |
+| `05-db-at-rest.txt` | `users.id_number` stored as Laravel ciphertext; passwords stored as bcrypt (`$2y$`) | 0 plaintext ID rows | 200-char ciphertext, `$2y$12$`, 0 plaintext rows ✅ |
+| `06-api-controls.txt` | Expired Sanctum token, invalid token, no token, role check, validation, rate limit, masked ID | 401 TOKEN_EXPIRED, 401, 401, 403, 422, 429, `2026-***01` | 401 TOKEN_EXPIRED, 401, 401, 403, 422, 429, `2026-***01` ✅ |
+| `07-secret-scan.txt` | Logs + git-tracked files contain no real keys, APP_KEY, tokens, names or ID numbers | no findings | no secrets or personal data found ✅ |
+| `08-backend-tests.txt` | Full automated suite (Week 13 + Week 14) | all pass | 58 passed ✅ |
+| `run-info.txt` | When and on which commit the evidence was produced | — | 2026-11-04 08:57 +0800 |
 
 Flutter screenshots (add your own): the login page on `https://localhost:5000`, the "session has expired" message,
 and a staff request detail showing the masked ID.
