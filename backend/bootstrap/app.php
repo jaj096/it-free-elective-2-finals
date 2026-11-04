@@ -4,6 +4,7 @@ use App\Exceptions\InvalidStateTransition;
 use App\Http\ApiError;
 use App\Http\Middleware\AssignCorrelationId;
 use App\Http\Middleware\EnsureRole;
+use App\Http\Middleware\RequireHttps;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -13,6 +14,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -31,6 +33,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Global, so even 404s for unknown URLs carry a correlation ID.
         $middleware->prepend(AssignCorrelationId::class);
         $middleware->alias(['role' => EnsureRole::class]);
+
+        // Week 14: only the local TLS proxy (Caddy) may tell us the original request was HTTPS.
+        $middleware->trustProxies(at: ['127.0.0.1', '::1']);
+        $middleware->prependToGroup('api', RequireHttps::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $isApi = fn (Request $request) => $request->is('api/*') || $request->expectsJson();
@@ -46,7 +52,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return match (true) {
                 $e instanceof ValidationException => ApiError::response(422, 'VALIDATION_FAILED', 'Some fields are invalid.', $e->errors()),
-                $e instanceof AuthenticationException => ApiError::response(401, 'UNAUTHENTICATED', 'Please sign in again.'),
+                // An expired token gets its own code so the client can say why (it is still a 401).
+                $e instanceof AuthenticationException => $request->bearerToken()
+                    && PersonalAccessToken::findToken($request->bearerToken())?->expires_at?->isPast()
+                    ? ApiError::response(401, 'TOKEN_EXPIRED', 'Your session has expired. Please sign in again.')
+                    : ApiError::response(401, 'UNAUTHENTICATED', 'Please sign in again.'),
                 $e instanceof AuthorizationException,
                 $e instanceof AccessDeniedHttpException => ApiError::response(403, 'FORBIDDEN', "You don't have access to this action."),
                 $e instanceof ModelNotFoundException,

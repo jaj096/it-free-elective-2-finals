@@ -13,7 +13,7 @@ return [
     'allowed_origins' => array_filter(explode(',', (string) env('CORS_ALLOWED_ORIGINS', 'http://localhost:5000'))),
 
     // Allows any localhost port during development (flutter run picks a random port).
-    'allowed_origins_patterns' => env('APP_ENV') === 'local' ? ['#^http://(localhost|127\.0\.0\.1)(:\d+)?$#'] : [],
+    'allowed_origins_patterns' => env('APP_ENV') === 'local' ? ['#^https?://(localhost|127\.0\.0\.1)(:\d+)?$#'] : [],
 
     'allowed_headers' => ['Authorization', 'Content-Type', 'Accept', 'Idempotency-Key', 'X-Correlation-ID'],
 

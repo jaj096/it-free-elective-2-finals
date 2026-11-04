@@ -54,6 +54,9 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    // Week 14: refuse API calls that did not arrive over HTTPS (see RequireHttps middleware).
+    'require_https' => filter_var(env('APP_REQUIRE_HTTPS', false), FILTER_VALIDATE_BOOL),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
