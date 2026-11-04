@@ -85,4 +85,37 @@ class AtRestEncryptionTest extends TestCase
             ->assertJsonPath('data.requester.has_id_number', true)
             ->assertJsonMissingPath('data.requester.id_number');
     }
+
+    public function test_app_key_rotation_reencrypts_with_the_new_key(): void
+    {
+        $user = User::factory()->create(['id_number' => '2026-00042']);
+        $oldKey = config('app.key');
+        $newKey = 'base64:'.base64_encode(random_bytes(32));
+
+        // Control: with ONLY the new key, the old row cannot be read (proves the key really changed).
+        $this->rotateTo($newKey, []);
+        try {
+            $user->fresh()->id_number;
+            $this->fail('Row encrypted with the old key should not decrypt with the new key alone.');
+        } catch (\Illuminate\Contracts\Encryption\DecryptException) {
+        }
+
+        // Rotate: new key active, old key kept as a previous key so old rows still decrypt.
+        $this->rotateTo($newKey, [$oldKey]);
+        $this->assertSame('2026-00042', $user->fresh()->id_number);
+
+        $this->artisan('security:reencrypt-id-numbers')->assertSuccessful();
+
+        // Old key removed completely: the row still decrypts, so it now uses the new key.
+        $this->rotateTo($newKey, []);
+        $this->assertSame('2026-00042', $user->fresh()->id_number);
+    }
+
+    private function rotateTo(string $key, array $previous): void
+    {
+        config(['app.key' => $key, 'app.previous_keys' => $previous]);
+        $this->app->forgetInstance('encrypter');
+        \Illuminate\Support\Facades\Crypt::clearResolvedInstance('encrypter');
+        \Illuminate\Database\Eloquent\Model::encryptUsing(null);
+    }
 }
