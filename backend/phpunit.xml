@@ -19,6 +19,8 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <!-- Test-only APP_KEY so encrypted columns work without a local .env. Not a real secret. -->
+        <env name="APP_KEY" value="base64:VEVTVC1BUFAtS0VZLU5PVC1BLVJFQUwtU0VDUkVULTA="/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>

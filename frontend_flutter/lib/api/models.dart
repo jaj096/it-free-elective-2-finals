@@ -146,7 +146,8 @@ class CertRequest {
       rejectionReason: j['rejection_reason'] as String?,
       reviewReason: j['review_reason'] as String?,
       requesterName: requester is Map ? _s(requester['name']) : null,
-      requesterIdNumber: requester is Map ? requester['id_number'] as String? : null,
+      // Week 14: the API only sends a masked ID (e.g. 2026-***01).
+      requesterIdNumber: requester is Map ? requester['id_number_masked'] as String? : null,
       certificate: cert is Map<String, dynamic> ? CertificateInfo.fromJson(cert) : null,
       history: history is List
           ? history.whereType<Map<String, dynamic>>().map(HistoryEntry.fromJson).toList()

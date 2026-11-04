@@ -13,7 +13,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 #[Fillable(['name', 'email', 'password', 'role', 'id_number'])]
-#[Hidden(['password', 'remember_token'])]
+#[Hidden(['password', 'remember_token', 'id_number'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -26,9 +26,23 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            // One-way: bcrypt hash, can only be checked, never read back.
             'password' => 'hashed',
             'role' => Role::class,
+            // Week 14: two-way, because the certificate must print it. Encrypted at rest with APP_KEY.
+            'id_number' => 'encrypted',
         ];
+    }
+
+    /** ID number for staff screens, e.g. 2026-***01 (data minimisation: the full value is only needed on the certificate). */
+    public function maskedIdNumber(): ?string
+    {
+        $id = (string) $this->id_number;
+        if ($id === '') {
+            return null;
+        }
+
+        return strlen($id) <= 6 ? str_repeat('*', strlen($id)) : substr($id, 0, 5).'***'.substr($id, -2);
     }
 
     public function hasRole(Role ...$roles): bool

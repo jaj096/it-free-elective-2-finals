@@ -36,7 +36,9 @@ class CertificateRequestResource extends JsonResource
             'requester' => $this->when($isStaff, fn () => [
                 'id' => $this->requester->id,
                 'name' => $this->requester->name,
-                'id_number' => $this->requester->id_number,
+                // Week 14: masked; staff only need to see that it exists and roughly matches.
+                'id_number_masked' => $this->requester->maskedIdNumber(),
+                'has_id_number' => filled($this->requester->id_number),
             ]),
             'certificate' => $this->whenLoaded('certificate', fn () => $this->certificate ? [
                 'id' => $this->certificate->id,

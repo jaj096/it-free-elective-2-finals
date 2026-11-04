@@ -20,7 +20,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'role' => $this->role->value,
             'role_label' => $this->role->label(),
-            'id_number' => $this->id_number,
+            // Week 14: id_number removed - the client never needs it (data minimisation).
         ];
     }
 }
