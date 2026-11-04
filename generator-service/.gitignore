@@ -1,3 +1,4 @@
 .env
 storage/*
 !storage/.gitkeep
+.env.backup

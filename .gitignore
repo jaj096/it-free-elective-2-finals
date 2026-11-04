@@ -3,3 +3,6 @@
 Thumbs.db
 .idea/
 .vscode/
+
+# Week 14: local TLS keys and certificates (scripts/dev-certs.sh)
+certs/

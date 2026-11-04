@@ -124,6 +124,8 @@ function bump_attempts(string $jobKey): int
 
 @mkdir(STORAGE . '/pdf', 0777, true);
 $config = env_config();
+// Same clock zone as the Laravel logs, so log lines can be lined up by time.
+date_default_timezone_set($config['GENERATOR_TIMEZONE'] ?? 'Asia/Manila');
 $mode = $config['GENERATOR_MODE'];
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';

@@ -1,0 +1,31 @@
+# Week 14: local HTTPS (TLS termination) for the API and the generator service.
+# Run from the repository root:  caddy run
+# Certificates come from scripts/dev-certs.sh (local dev CA). See docs/week14/https-setup.md.
+{
+	# Do not listen on :80 for automatic redirects; plain HTTP is refused by the apps instead.
+	auto_https disable_redirects
+	admin localhost:2019
+}
+
+(tls_common) {
+	tls certs/localhost.pem certs/localhost.key {
+		protocols tls1.2 tls1.3
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		-Server
+	}
+}
+
+# Laravel API: https://localhost:8443/api/v1  ->  php artisan serve (127.0.0.1:8000)
+https://localhost:8443 {
+	import tls_common
+	reverse_proxy 127.0.0.1:8000
+}
+
+# Generator service: https://localhost:8444  ->  php -S 127.0.0.1:8081
+https://localhost:8444 {
+	import tls_common
+	reverse_proxy 127.0.0.1:8081
+}
