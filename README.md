@@ -17,13 +17,15 @@ Approval, verification and release remain human decisions.
 | `backend/` | Laravel 13 REST API (`/api/v1`), Sanctum token auth, database queue, automation job, tests |
 | `generator-service/` | Mock Certificate Generator Service (plain PHP, no dependencies) with switchable failure modes |
 | `frontend_flutter/` | Flutter Web client (browser only) |
-| `scripts/run-evidence.sh` | Runs the Week 13 evidence scenarios against the live system and saves the results |
-| `evidence/` | Evidence index and lab log template (fill this from your own runs) |
+| `scripts/run-evidence.sh` | Runs the Week 13 and Week 14 evidence scenarios against the live system and saves the results |
+| `scripts/dev-certs.sh`, `Caddyfile` | Week 14: local dev CA + HTTPS reverse proxy |
+| `evidence/` | Evidence index and lab log template (fill this from your own runs); `evidence/week14/` |
+| `docs/week14/` | Week 14 security documents (data flow, requirements, ADR, key lifecycle, tests, activities) |
 
 ```
-Flutter Web ──HTTPS(wk14)/JSON──▶ Laravel API ──▶ database queue ──▶ queue worker ──X-Service-Key──▶ Generator Service
-   (browser)        Bearer token        │                                │
-                                        └── audit_logs + automation.log ◀┘   (correlation ID links both)
+Flutter Web ──HTTPS──▶ Caddy ──▶ Laravel API ──▶ database queue ──▶ queue worker ──HTTPS + signed + encrypted──▶ Caddy ──▶ Generator
+   (browser)  Bearer token          │                                 │   (HMAC-SHA256, XChaCha20-Poly1305, key ID)
+                                    └── audit_logs + automation.log ◀─┘   (correlation ID links both)
 ```
 
 ## Requirements
@@ -35,16 +37,24 @@ Flutter Web ──HTTPS(wk14)/JSON──▶ Laravel API ──▶ database queue
 
 ## Setup (first time)
 
+Week 14 runs everything over HTTPS. Full details and the reasons behind each step: [`docs/week14/https-setup.md`](docs/week14/https-setup.md).
+
+### 0. Certificates and keys
+
+```bash
+brew install caddy                     # Windows: winget install CaddyServer.Caddy
+bash scripts/dev-certs.sh              # local dev CA + localhost certificate in certs/ (git-ignored)
+security add-trusted-cert -r trustRoot -k ~/Library/Keychains/login.keychain-db certs/dev-ca.pem   # so Chrome trusts it
+```
+
 ### 1. Generator service
 
 ```bash
 cd generator-service
 cp .env.example .env            # Windows: copy .env.example .env
-# Edit .env: set GENERATOR_SERVICE_KEY to a long random string
+# Paste the generator block printed by `php artisan generator:keys` (step 2) into .env
 php -S 127.0.0.1:8081 -t public public/index.php
 ```
-
-Check: open http://127.0.0.1:8081/health → `{"status":"ok","mode":"success"}`
 
 ### 2. Backend API (new terminal)
 
@@ -52,11 +62,12 @@ Check: open http://127.0.0.1:8081/health → `{"status":"ok","mode":"success"}`
 cd backend
 composer install
 cp .env.example .env            # Windows: copy .env.example .env
-# Edit .env: GENERATOR_SERVICE_KEY must be the SAME value as in generator-service/.env
 php artisan key:generate
+php artisan generator:keys      # paste the backend block here and the generator block into generator-service/.env
+# Set GENERATOR_CA_BUNDLE to the full path of certs/dev-ca.pem
 php -r "file_exists('database/database.sqlite') || touch('database/database.sqlite');"
 php artisan migrate:fresh --seed
-php artisan serve --port=8000
+php artisan serve --host=127.0.0.1 --port=8000
 ```
 
 To use MySQL instead of SQLite, set `DB_CONNECTION=mysql` and the `DB_*` values in `.env`.
@@ -65,23 +76,32 @@ To use MySQL instead of SQLite, set `DB_CONNECTION=mysql` and the `DB_*` values 
 
 ```bash
 cd backend
-php artisan queue:work
+php artisan queue:work          # after any .env change: php artisan queue:restart, then start it again
 ```
 
 Optional, for the stuck-item sweeper (every 10 minutes): `php artisan schedule:work` in another terminal.
 
-### 4. Flutter Web client (new terminal)
+### 4. HTTPS proxy (new terminal, repository root)
+
+```bash
+caddy run                       # https://localhost:8443 → API, https://localhost:8444 → generator
+```
+
+### 5. Flutter Web client (new terminal)
 
 ```bash
 cd frontend_flutter
 flutter pub get
-flutter run -d chrome --web-port=5000 --dart-define=API_BASE_URL=http://localhost:8000/api/v1
+flutter run -d chrome --web-port=5000 \
+  --web-tls-cert-path ../certs/localhost.pem --web-tls-cert-key-path ../certs/localhost.key \
+  --dart-define=API_BASE_URL=https://localhost:8443/api/v1
 ```
 
 If Flutter complains about missing web files, run `flutter create . --platforms web` once inside
 `frontend_flutter` (it only adds missing files) and run again.
 
-Check: `http://localhost:8000/api/v1/health` should show `"database":"ok","generator":"ok"`.
+Check: `curl --cacert certs/dev-ca.pem https://localhost:8443/api/v1/health` should show `"database":"ok","generator":"ok"`.
+Plain `http://127.0.0.1:8000/...` answers `403 HTTPS_REQUIRED` on purpose.
 
 ## Demo accounts (fictional)
 
@@ -112,13 +132,31 @@ no restart is needed.
 
 Duplicate-delivery test: `php artisan certificates:dispatch-duplicate 1 --times=3` → still one certificate.
 
-**Run everything at once:** with the generator, API and worker running on a freshly seeded database:
+## Security failure injection (Week 14 demo)
 
 ```bash
-bash scripts/run-evidence.sh
+cd backend && php artisan generator:security-test          # or --case=replayed-nonce, --json=file
 ```
 
-It fills `evidence/01-…` to `evidence/07-…` with API responses and the matching log lines.
+| Case | Expected |
+| --- | --- |
+| `valid` (control) | 201 |
+| `altered-ciphertext` | 400 `DECRYPTION_FAILED` |
+| `bad-signature` | 401 `BAD_SIGNATURE` |
+| `expired-timestamp` | 401 `REQUEST_EXPIRED` |
+| `replayed-nonce` | 409 `REPLAY_DETECTED` |
+| `wrong-key-id` | 401 `UNKNOWN_KEY_ID` |
+| `plain-http` | sender refuses; generator 403 `HTTPS_REQUIRED` |
+
+Each rejection writes one safe line to `generator-service/storage/generator.log` (reason, key ID, correlation ID).
+
+**Run everything at once:** with the generator, API, worker and Caddy running on a freshly seeded database:
+
+```bash
+bash scripts/run-evidence.sh          # both weeks;  or: week13 | week14
+```
+
+It fills `evidence/01-…` to `evidence/07-…` (Week 13) and `evidence/week14/` (Week 14) with API responses and the matching log lines.
 Add your own Flutter screenshots to `evidence/08-flutter-responsive/`.
 
 ## Reliability rules (where to find them in code)
@@ -136,6 +174,20 @@ Add your own Flutter screenshots to `evidence/08-flutter-responsive/`.
 | Structured JSON log format | `backend/app/Logging/FlatJsonFormatter.php` → `storage/logs/automation.log` |
 | Retry settings | `backend/config/certificates.php` (read from `.env`) |
 
+## Security controls (Week 14)
+
+| Control | Where |
+| --- | --- |
+| Payload minimisation + encryption of name/ID (XChaCha20-Poly1305) | `backend/app/Security/SecureRequestBuilder.php`, `PayloadEncryptor.php` |
+| HMAC-SHA256 request signing (method, path, timestamp, nonce, key ID, body hash) | `backend/app/Security/RequestSigner.php` |
+| Keys from `.env`, separate encrypt/sign keys, key ID | `backend/app/Security/GeneratorKeyring.php`, `php artisan generator:keys` |
+| Receiver checks: key ID → signature → 5-min window → nonce → decrypt | `generator-service/src/SecureReceiver.php` |
+| HTTPS only + certificate verification | `Caddyfile`, `GeneratorClient::http()`, `RequireHttps` middleware |
+| ID number encrypted at rest; masked in API | `User` casts, migration `2026_11_04_000100`, `security:reencrypt-id-numbers` |
+| Expired token → `TOKEN_EXPIRED` | `bootstrap/app.php` |
+| Download integrity (`INTEGRITY_FAILED`, `X-Content-SHA256`) | `CertificateController@download`, Flutter `ApiClient.verifyDownload` |
+| Failure injection | `php artisan generator:security-test` |
+
 ## Tests
 
 ```bash
@@ -143,32 +195,38 @@ cd backend
 php artisan test        # or: vendor/bin/phpunit
 ```
 
-19 feature tests run the real queue job through a database queue worker with the generator faked:
+59 tests. Week 13 (23): the real queue job through a database queue worker with the generator faked:
 normal success, transient recovery, permanent failure, retry limit, missing ID number, duplicate jobs,
 sweeper, login/rate limit, validation, 401/403/404/409, idempotency key, full lifecycle, tamper detection
 and insert-only audit log.
 
-Flutter starter widget tests: `cd frontend_flutter && flutter test`.
+Week 14 (36): `SecureExchangeTest` and `SecurityTestCommandTest` start the **real** generator service (`php -S`)
+and test every attack end to end; `AtRestEncryptionTest` (ciphertext in DB, key rotation); `ApiSecurityTest`
+(expired token, HTTPS only, proxy trust, roles, download integrity).
 
-## Security notes (Week 13 level)
+Flutter: `cd frontend_flutter && flutter test` (12 tests, including safe security messages).
+
+## Security notes
 
 - Secrets live only in `.env` files, which are git-ignored. Only `.env.example` files with fake values are committed.
-- The generator service key is sent server-to-server; it never reaches Flutter.
+  The evidence script scans logs, tracked files and keys against Git history.
+- Exchange keys and `APP_KEY` never reach Flutter. The old static `X-Service-Key` (Week 13) is replaced by signed,
+  encrypted, single-use requests.
 - All role and ownership checks happen on the server (`role:` middleware and controller checks).
   Requesters get 404 for other people's requests, so IDs can't be probed.
-- Error responses use one safe format with a correlation ID; stack traces never reach the client.
-  Keep `APP_DEBUG=false` when collecting evidence.
-- Login is limited to 5 attempts per minute; tokens expire after 8 hours.
-- Logs record IDs and statuses, not names, passwords or tokens.
+- Error responses use one safe format with a correlation ID; stack traces never reach the client. `APP_DEBUG=false`.
+- Login is limited to 5 attempts per minute; tokens expire after 8 hours (`TOKEN_EXPIRED`) and are pruned daily.
+- Logs record IDs, statuses and reason codes, not names, ID numbers, passwords, tokens or keys.
 - Limitation: the Flutter app keeps its token in `sessionStorage` (cleared when the tab closes);
-  a script injected into the page could read it. HTTPS and signed service calls come in Week 14.
+  a script injected into the page could read it. See residual risks in `docs/week14/06-security-test-record.md`.
 
 ## Known limitations
 
 - The generator is a mock; its timing does not represent a real PDF service.
 - Database queue driver and a single worker: fine for one office, not load-tested (Week 16).
 - Notifications are in-app only.
-- Plain HTTP until Week 14.
+- Certificate PDFs are not yet encrypted on disk (backend and generator) and carry no digital signature.
+- Local HTTPS uses a self-made development CA; production needs a public certificate.
 
 ## AI assistance
 
