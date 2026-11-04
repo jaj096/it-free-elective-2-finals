@@ -10,7 +10,8 @@ import '../platform/browser.dart';
 /// Holds the signed-in user and token, and tells the app when that changes.
 class Session extends ChangeNotifier {
   Session(this.api) {
-    api.onUnauthenticated = () => _clear(message: 'Your session ended. Please sign in again.');
+    api.onUnauthenticated = ({bool expired = false}) => _clear(
+        message: expired ? 'Your session has expired. Please sign in again.' : 'Your session ended. Please sign in again.');
     _restore();
   }
 

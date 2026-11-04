@@ -117,4 +117,24 @@ class ApiSecurityTest extends TestCase
             ->assertJsonMissingPath('exception')
             ->assertJsonMissingPath('trace');
     }
+
+    public function test_download_sends_hash_and_refuses_an_altered_file(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('local');
+        $custodian = User::factory()->custodian()->create();
+        $request = CertificateRequest::factory()->create(['status' => \App\Enums\RequestStatus::Generated]);
+        \Illuminate\Support\Facades\Storage::disk('local')->put('certificates/T-1.pdf', "%PDF-1.4\nok");
+        $certificate = \App\Models\Certificate::create([
+            'certificate_request_id' => $request->id, 'certificate_number' => 'T-1', 'file_path' => 'certificates/T-1.pdf',
+            'sha256' => hash('sha256', "%PDF-1.4\nok"), 'generated_at' => now(),
+        ]);
+        $auth = ['Authorization' => 'Bearer '.$this->token($custodian, now()->addHour())];
+
+        $this->get("/api/v1/certificates/{$certificate->id}/download", $auth)
+            ->assertOk()->assertHeader('X-Content-SHA256', hash('sha256', "%PDF-1.4\nok"));
+
+        \Illuminate\Support\Facades\Storage::disk('local')->put('certificates/T-1.pdf', "%PDF-1.4\naltered");
+        $this->getJson("/api/v1/certificates/{$certificate->id}/download", $auth)
+            ->assertStatus(409)->assertJsonPath('error.code', 'INTEGRITY_FAILED');
+    }
 }

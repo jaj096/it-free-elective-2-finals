@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart' as crypto;
 import 'package:http/http.dart' as http;
 
 import '../config.dart';
@@ -25,7 +26,8 @@ class ApiClient {
   String? token;
 
   /// Called when the server says the token is missing or expired (401).
-  void Function()? onUnauthenticated;
+  /// [expired] is true when the server answered TOKEN_EXPIRED.
+  void Function({bool expired})? onUnauthenticated;
 
   // ---------------------------------------------------------------- auth
 
@@ -101,10 +103,23 @@ class ApiClient {
       _item(await _send('POST', '/certificates/$certificateId/archive'), CertRequest.fromJson);
 
   /// Downloads the PDF bytes with the bearer token (a plain link can't send the token).
+  ///
+  /// Week 14: the server sends the SHA-256 recorded at generation in X-Content-SHA256.
+  /// If the bytes we received hash to something else, the file was altered: it is discarded.
   Future<Uint8List> downloadCertificate(int certificateId) async {
     final response = await _raw('GET', '/certificates/$certificateId/download', accept: 'application/pdf');
-    if (response.statusCode == 200) return response.bodyBytes;
-    throw _toException(response);
+    if (response.statusCode != 200) throw _toException(response);
+    verifyDownload(response.bodyBytes, response.headers['x-content-sha256']);
+    return response.bodyBytes;
+  }
+
+  /// Throws [ApiErrorKind.integrity] unless [bytes] match [expectedSha256] and look like a PDF.
+  static void verifyDownload(Uint8List bytes, String? expectedSha256) {
+    final actual = crypto.sha256.convert(bytes).toString();
+    final looksLikePdf = bytes.length > 4 && String.fromCharCodes(bytes.take(4)) == '%PDF';
+    if (expectedSha256 == null || actual != expectedSha256.toLowerCase() || !looksLikePdf) {
+      throw ApiException(kind: ApiErrorKind.integrity, code: 'INTEGRITY_FAILED', message: 'Downloaded file failed its integrity check.');
+    }
   }
 
   // ---------------------------------------------------- automation & misc
@@ -152,7 +167,8 @@ class ApiClient {
         final decoded = jsonDecode(response.body);
         return decoded is Map<String, dynamic> ? decoded : <String, dynamic>{'data': decoded};
       } on FormatException {
-        throw ApiException(kind: ApiErrorKind.server, message: 'Unreadable server response.');
+        // Altered or truncated body: never show or use it.
+        throw ApiException(kind: ApiErrorKind.integrity, message: 'Unreadable server response.');
       }
     }
     throw _toException(response, notifyOn401: auth);
@@ -167,6 +183,10 @@ class ApiClient {
     bool auth = true,
     String accept = 'application/json',
   }) async {
+    // Week 14: never send a password or token over plain HTTP.
+    if (!AppConfig.isSecureUrl(_baseUrl)) {
+      throw ApiException(kind: ApiErrorKind.insecure, code: 'HTTPS_REQUIRED', message: 'The API address is not https.');
+    }
     final uri = Uri.parse('$_baseUrl$path').replace(queryParameters: (query == null || query.isEmpty) ? null : query);
     final request = http.Request(method, uri)
       ..headers.addAll({
@@ -205,20 +225,25 @@ class ApiClient {
       });
     }
 
-    final kind = switch (status) {
-      401 => ApiErrorKind.unauthenticated,
-      403 => ApiErrorKind.forbidden,
-      404 => ApiErrorKind.notFound,
-      409 => ApiErrorKind.conflict,
-      422 => ApiErrorKind.validation,
-      429 => ApiErrorKind.rateLimited,
+    final code = error['code'] as String?;
+    final kind = switch ((status, code)) {
+      (401, 'TOKEN_EXPIRED') => ApiErrorKind.expired,
+      (401, _) => ApiErrorKind.unauthenticated,
+      (403, 'HTTPS_REQUIRED') => ApiErrorKind.insecure,
+      (403, _) => ApiErrorKind.forbidden,
+      (404, _) => ApiErrorKind.notFound,
+      (409, 'INTEGRITY_FAILED') => ApiErrorKind.integrity,
+      (409, _) => ApiErrorKind.conflict,
+      (400, _) => ApiErrorKind.invalid,
+      (422, _) => ApiErrorKind.validation,
+      (429, _) => ApiErrorKind.rateLimited,
       _ => status >= 500 ? ApiErrorKind.server : ApiErrorKind.conflict,
     };
 
-    final code = error['code'] as String?;
     // A wrong password is also a 401, but it must not end the (non-existent) session.
-    if (kind == ApiErrorKind.unauthenticated && notifyOn401 && code != 'INVALID_CREDENTIALS') {
-      onUnauthenticated?.call();
+    final sessionEnded = kind == ApiErrorKind.expired || (kind == ApiErrorKind.unauthenticated && code != 'INVALID_CREDENTIALS');
+    if (sessionEnded && notifyOn401) {
+      onUnauthenticated?.call(expired: kind == ApiErrorKind.expired);
     }
 
     return ApiException(

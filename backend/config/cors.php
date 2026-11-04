@@ -18,7 +18,7 @@ return [
     'allowed_headers' => ['Authorization', 'Content-Type', 'Accept', 'Idempotency-Key', 'X-Correlation-ID'],
 
     // Lets the Flutter app read the correlation ID and the download filename.
-    'exposed_headers' => ['X-Correlation-ID', 'Content-Disposition'],
+    'exposed_headers' => ['X-Correlation-ID', 'Content-Disposition', 'X-Content-SHA256'],
 
     'max_age' => 600,
 

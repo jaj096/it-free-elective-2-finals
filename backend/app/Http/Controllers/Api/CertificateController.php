@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\RequestStatus;
 use App\Enums\Role;
+use App\Http\ApiError;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CertificateRequestResource;
 use App\Models\Certificate;
@@ -13,6 +14,7 @@ use App\Services\CertificateWorkflow;
 use App\Services\Notifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -90,10 +92,19 @@ class CertificateController extends Controller
             abort(403);
         }
 
+        // Week 14: never hand out a file that no longer matches the hash recorded at generation.
+        $disk = Storage::disk('local');
+        if (! $disk->exists($certificate->file_path) || ! hash_equals($certificate->sha256, hash('sha256', $disk->get($certificate->file_path)))) {
+            Log::channel('automation')->warning('certificate.integrity_failed', ['certificate_id' => $certificate->id, 'request_id' => $certificate->certificate_request_id]);
+            abort(ApiError::response(409, 'INTEGRITY_FAILED', 'This certificate file failed its integrity check. Staff have been asked to regenerate it.'));
+        }
+
         $this->workflow->audit($certificate->request, 'downloaded', $user);
 
-        return Storage::disk('local')->download($certificate->file_path, $certificate->certificate_number.'.pdf', [
+        // The client re-checks this hash after download (end-to-end integrity).
+        return $disk->download($certificate->file_path, $certificate->certificate_number.'.pdf', [
             'Content-Type' => 'application/pdf',
+            'X-Content-SHA256' => $certificate->sha256,
         ]);
     }
 

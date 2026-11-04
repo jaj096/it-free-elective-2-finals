@@ -1,7 +1,11 @@
 /// The kinds of failure the UI shows differently (see "UI states" in the design doc).
 enum ApiErrorKind {
   validation, // 422
+  invalid, // 400: request could not be read
   unauthenticated, // 401
+  expired, // 401 TOKEN_EXPIRED: the 8-hour session ended
+  insecure, // 403 HTTPS_REQUIRED, or the app was built with an http:// API address
+  integrity, // altered or unreadable data (bad response body, hash mismatch, INTEGRITY_FAILED)
   forbidden, // 403
   notFound, // 404
   conflict, // 409
@@ -46,7 +50,16 @@ class ApiException implements Exception {
       case ApiErrorKind.forbidden:
         return "You don't have access to this.";
       case ApiErrorKind.unauthenticated:
-        return 'Please sign in again.';
+        return code == 'INVALID_CREDENTIALS' ? message : 'Please sign in again.';
+      case ApiErrorKind.expired:
+        return 'Your session has expired. Please sign in again.';
+      case ApiErrorKind.insecure:
+        return 'A secure connection is required. Open the app from its https:// address.';
+      case ApiErrorKind.integrity:
+        return 'The data could not be verified, so it was not used. Please try again; '
+            'if it keeps happening, tell the registrar${correlationId == null ? '' : ' (reference $correlationId)'}.';
+      case ApiErrorKind.invalid:
+        return 'The request was not accepted. Check what you entered and try again.';
       default:
         return message;
     }
