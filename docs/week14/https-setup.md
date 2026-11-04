@@ -73,7 +73,7 @@ A worker keeps its old configuration in memory until it restarts.
 export CURL_CA_BUNDLE=$PWD/certs/dev-ca.pem
 curl https://localhost:8443/api/v1/health          # 200, "generator":"ok" (Laravel → generator over verified TLS)
 curl http://127.0.0.1:8000/api/v1/health           # 403 HTTPS_REQUIRED
-curl --cacert /dev/null https://localhost:8443/    # fails: certificate not trusted (proves verification is on)
+env -u CURL_CA_BUNDLE curl https://localhost:8443/  # exit 60: not trusted by the normal store (verification is on)
 curl -sv https://localhost:8443/api/v1/health -o /dev/null 2>&1 | grep -E "SSL connection|issuer|verify|strict"
 cd backend && php artisan generator:security-test  # all 7 cases PASS
 ```

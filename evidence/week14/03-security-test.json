@@ -1,0 +1,56 @@
+{
+    "run_at": "2026-11-04T08:57:42+08:00",
+    "target": "https://localhost:8444",
+    "correlation_id": "sec-test-bpaqsk",
+    "results": [
+        {
+            "case": "valid",
+            "expected": "201",
+            "actual": "201",
+            "result": "PASS",
+            "note": "control: must succeed"
+        },
+        {
+            "case": "altered-ciphertext",
+            "expected": "400 DECRYPTION_FAILED",
+            "actual": "400 DECRYPTION_FAILED",
+            "result": "PASS",
+            "note": ""
+        },
+        {
+            "case": "bad-signature",
+            "expected": "401 BAD_SIGNATURE",
+            "actual": "401 BAD_SIGNATURE",
+            "result": "PASS",
+            "note": ""
+        },
+        {
+            "case": "expired-timestamp",
+            "expected": "401 REQUEST_EXPIRED",
+            "actual": "401 REQUEST_EXPIRED",
+            "result": "PASS",
+            "note": ""
+        },
+        {
+            "case": "replayed-nonce",
+            "expected": "409 REPLAY_DETECTED",
+            "actual": "409 REPLAY_DETECTED",
+            "result": "PASS",
+            "note": "first send: 201"
+        },
+        {
+            "case": "wrong-key-id",
+            "expected": "401 UNKNOWN_KEY_ID",
+            "actual": "401 UNKNOWN_KEY_ID",
+            "result": "PASS",
+            "note": ""
+        },
+        {
+            "case": "plain-http",
+            "expected": "403 HTTPS_REQUIRED",
+            "actual": "403 HTTPS_REQUIRED",
+            "result": "PASS",
+            "note": "sender guard: blocked before sending; sent to http://127.0.0.1:8081"
+        }
+    ]
+}

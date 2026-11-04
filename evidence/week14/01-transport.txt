@@ -1,0 +1,18 @@
+# expected -> actual
+## API over HTTPS with the dev CA (expect TLS 1.2/1.3, 'verify ok', HSTS, 200)
+* SSL connection using TLSv1.3 / AEAD-CHACHA20-POLY1305-SHA256 / [blank] / UNDEF
+*  subject: O=Cert Queue Dev; CN=localhost
+*  issuer: O=Cert Queue Dev CA (class project); CN=Cert Queue Dev Root CA
+*  SSL certificate verify ok.
+< HTTP/2 200 
+< strict-transport-security: max-age=31536000
+## Generator over HTTPS (expect 200)
+https://localhost:8444/health -> 200
+## Normal system trust store, dev CA NOT trusted (expect curl exit 60 = certificate not trusted)
+curl exit code -> 60
+## API over plain HTTP, straight to artisan serve (expect 403 HTTPS_REQUIRED)
+{"error":{"code":"HTTPS_REQUIRED","message":"Use the secure (https:\/\/) address.","correlation_id":"c-w7ufyouk"}} [HTTP 403]
+## Login over plain HTTP (expect 403; the password is never accepted in clear)
+403
+## Generator /generate over plain HTTP (expect 403 HTTPS_REQUIRED)
+{"error":{"code":"HTTPS_REQUIRED","message":"Use HTTPS."}} [HTTP 403]

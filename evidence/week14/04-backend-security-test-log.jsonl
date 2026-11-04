@@ -1,0 +1,7 @@
+{"timestamp":"2026-11-04T08:57:42+08:00","level":"info","event":"security_test.case","correlation_id":"sec-test-bpaqsk","case":"valid","http_status":201,"code":null,"result":"pass"}
+{"timestamp":"2026-11-04T08:57:42+08:00","level":"info","event":"security_test.case","correlation_id":"sec-test-bpaqsk","case":"altered-ciphertext","http_status":400,"code":"DECRYPTION_FAILED","result":"pass"}
+{"timestamp":"2026-11-04T08:57:42+08:00","level":"info","event":"security_test.case","correlation_id":"sec-test-bpaqsk","case":"bad-signature","http_status":401,"code":"BAD_SIGNATURE","result":"pass"}
+{"timestamp":"2026-11-04T08:57:42+08:00","level":"info","event":"security_test.case","correlation_id":"sec-test-bpaqsk","case":"expired-timestamp","http_status":401,"code":"REQUEST_EXPIRED","result":"pass"}
+{"timestamp":"2026-11-04T08:57:42+08:00","level":"info","event":"security_test.case","correlation_id":"sec-test-bpaqsk","case":"replayed-nonce","http_status":409,"code":"REPLAY_DETECTED","result":"pass"}
+{"timestamp":"2026-11-04T08:57:42+08:00","level":"info","event":"security_test.case","correlation_id":"sec-test-bpaqsk","case":"wrong-key-id","http_status":401,"code":"UNKNOWN_KEY_ID","result":"pass"}
+{"timestamp":"2026-11-04T08:57:42+08:00","level":"info","event":"security_test.case","correlation_id":"sec-test-bpaqsk","case":"plain-http","http_status":403,"code":"HTTPS_REQUIRED","result":"pass"}

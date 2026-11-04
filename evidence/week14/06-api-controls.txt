@@ -1,0 +1,8 @@
+# expected -> actual (HTTP code, error code)
+expired Sanctum token (expect 401 TOKEN_EXPIRED) -> 401 TOKEN_EXPIRED
+made-up token (expect 401 UNAUTHENTICATED) -> 401 UNAUTHENTICATED
+no token (expect 401 UNAUTHENTICATED) -> 401 UNAUTHENTICATED
+requester approves (expect 403 FORBIDDEN) -> 403 FORBIDDEN
+invalid input (expect 422 VALIDATION_FAILED) -> 422 VALIDATION_FAILED
+6th bad login in a minute (expect 429 TOO_MANY_REQUESTS) -> 429 TOO_MANY_REQUESTS
+staff view shows masked ID only (expect 2026-***01) -> 2026-***01

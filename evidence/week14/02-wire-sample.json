@@ -1,0 +1,23 @@
+{
+    "method": "POST",
+    "path": "/generate",
+    "headers": {
+        "X-Key-Id": "k202611",
+        "X-Timestamp": "1793753862",
+        "X-Nonce": "ZsKSD0xPK3WhdYynVRpLVg",
+        "X-Content-SHA256": "615edd8b7667b2b5db303d76391f90778499cc7e386010ceab08c98603b1a0e8",
+        "X-Signature": "ace2dc06db61d6f9e2e9a116ce1f13a3311e7754f02d377f487ee049f92a72df"
+    },
+    "body": {
+        "v": 1,
+        "job_key": "evidence-sample",
+        "certificate_type": "enrollment",
+        "purpose": "Scholarship application",
+        "protected": {
+            "alg": "XChaCha20-Poly1305",
+            "kid": "k202611",
+            "nonce": "75LFDNG2DnnLM477GbGBlfhmVkRKEZXm",
+            "ciphertext": "oamBu00r6yX1CrGklNNZTpteetLfL2Jbw91ovur/b/yPsKONzVgPvJCWFGkqPcJGhz+ap9Ona9qJYXR2JPVB05Uk4FnOWSpiiBOfqk8+kpV5C4ET5lA="
+        }
+    }
+}

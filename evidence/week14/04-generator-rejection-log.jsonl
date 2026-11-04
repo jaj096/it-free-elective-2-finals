@@ -1,0 +1,6 @@
+{"timestamp":"2026-11-04T08:57:42+08:00","service":"generator","event":"security.rejected","reason":"DECRYPTION_FAILED","http_status":400,"key_id":"k202611","correlation_id":"sec-test-bpaqsk"}
+{"timestamp":"2026-11-04T08:57:42+08:00","service":"generator","event":"security.rejected","reason":"BAD_SIGNATURE","http_status":401,"key_id":"k202611","correlation_id":"sec-test-bpaqsk"}
+{"timestamp":"2026-11-04T08:57:42+08:00","service":"generator","event":"security.rejected","reason":"REQUEST_EXPIRED","http_status":401,"key_id":"k202611","correlation_id":"sec-test-bpaqsk"}
+{"timestamp":"2026-11-04T08:57:42+08:00","service":"generator","event":"security.rejected","reason":"REPLAY_DETECTED","http_status":409,"key_id":"k202611","correlation_id":"sec-test-bpaqsk"}
+{"timestamp":"2026-11-04T08:57:42+08:00","service":"generator","event":"security.rejected","reason":"UNKNOWN_KEY_ID","http_status":401,"key_id":"k-revoked","correlation_id":"sec-test-bpaqsk"}
+{"timestamp":"2026-11-04T08:57:42+08:00","service":"generator","event":"security.rejected","reason":"HTTPS_REQUIRED","correlation_id":"sec-test-bpaqsk"}

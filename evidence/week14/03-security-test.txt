@@ -1,0 +1,13 @@
+Target: https://localhost:8444 (correlation ID sec-test-bpaqsk)
++--------------------+-----------------------+-----------------------+--------+---------------------------------------------------------------------+
+| Case | Expected | Actual | Result | Note |
++--------------------+-----------------------+-----------------------+--------+---------------------------------------------------------------------+
+| valid | 201 | 201 | PASS | control: must succeed |
+| altered-ciphertext | 400 DECRYPTION_FAILED | 400 DECRYPTION_FAILED | PASS | |
+| bad-signature | 401 BAD_SIGNATURE | 401 BAD_SIGNATURE | PASS | |
+| expired-timestamp | 401 REQUEST_EXPIRED | 401 REQUEST_EXPIRED | PASS | |
+| replayed-nonce | 409 REPLAY_DETECTED | 409 REPLAY_DETECTED | PASS | first send: 201 |
+| wrong-key-id | 401 UNKNOWN_KEY_ID | 401 UNKNOWN_KEY_ID | PASS | |
+| plain-http | 403 HTTPS_REQUIRED | 403 HTTPS_REQUIRED | PASS | sender guard: blocked before sending; sent to http://127.0.0.1:8081 |
++--------------------+-----------------------+-----------------------+--------+---------------------------------------------------------------------+
+Saved /Users/jewelisdoomed/cert-queue/evidence/week14/03-security-test.json
