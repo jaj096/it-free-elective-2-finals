@@ -14,8 +14,8 @@ re-run the script and update this table if anything changes. Keep any failures; 
 | `05-db-at-rest.txt` | `users.id_number` stored as Laravel ciphertext; passwords stored as bcrypt (`$2y$`) | 0 plaintext ID rows | 200-char ciphertext, `$2y$12$`, 0 plaintext rows ✅ |
 | `06-api-controls.txt` | Expired Sanctum token, invalid token, no token, role check, validation, rate limit, masked ID | 401 TOKEN_EXPIRED, 401, 401, 403, 422, 429, `2026-***01` | 401 TOKEN_EXPIRED, 401, 401, 403, 422, 429, `2026-***01` ✅ |
 | `07-secret-scan.txt` | Logs + git-tracked files contain no real keys, APP_KEY, tokens, names or ID numbers | no findings | no secrets or personal data found ✅ |
-| `08-backend-tests.txt` | Full automated suite (Week 13 + Week 14) | all pass | 58 passed ✅ |
-| `run-info.txt` | When and on which commit the evidence was produced | — | 2026-11-04 08:57 +0800 |
+| `08-backend-tests.txt` | Full automated suite (Week 13 + Week 14) | all pass | 59 passed ✅ |
+| `run-info.txt` | When and on which commit the evidence was produced | — | 2026-11-08 21:25 +0800, commit d0ff7b3 |
 
 Flutter screenshots (add your own): the login page on `https://localhost:5000`, the "session has expired" message,
 and a staff request detail showing the masked ID.
