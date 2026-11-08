@@ -71,7 +71,7 @@ mkdir -p "$EVIDENCE"
 echo "== Health check"
 curl -s "$API/health" | tee "$EVIDENCE/health-before.json"; echo
 
-APPROVER=$(login approver@example.test)
+APPROVER=$(login approver@example.test || true)
 [[ -n "$APPROVER" ]] || { echo "Login failed. Is the backend running and seeded?"; exit 1; }
 
 echo "== 1. Normal success (request #1)"
@@ -135,7 +135,7 @@ week14() {
   local DB="$ROOT/backend/database/database.sqlite"
   mkdir -p "$W"
   echo "== WEEK 14: secure data exchange -> $W"
-  APPROVER=$(login approver@example.test)
+  APPROVER=$(login approver@example.test || true)
   [[ -n "$APPROVER" ]] || { echo "Login over HTTPS failed. Are Caddy, the API and certs/dev-ca.pem in place?"; exit 1; }
 
   echo "== 14.1 Transport: TLS handshake, certificate verification, plain HTTP refused"
