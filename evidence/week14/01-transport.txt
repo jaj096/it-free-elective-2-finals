@@ -11,7 +11,7 @@ https://localhost:8444/health -> 200
 ## Normal system trust store, dev CA NOT trusted (expect curl exit 60 = certificate not trusted)
 curl exit code -> 60
 ## API over plain HTTP, straight to artisan serve (expect 403 HTTPS_REQUIRED)
-{"error":{"code":"HTTPS_REQUIRED","message":"Use the secure (https:\/\/) address.","correlation_id":"c-w7ufyouk"}} [HTTP 403]
+{"error":{"code":"HTTPS_REQUIRED","message":"Use the secure (https:\/\/) address.","correlation_id":"c-szugzrw9"}} [HTTP 403]
 ## Login over plain HTTP (expect 403; the password is never accepted in clear)
 403
 ## Generator /generate over plain HTTP (expect 403 HTTPS_REQUIRED)
