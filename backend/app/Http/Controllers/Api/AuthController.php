@@ -23,7 +23,11 @@ class AuthController extends Controller
 
         $user = User::where('email', strtolower($data['email']))->first();
 
-        if (! $user || ! Hash::check($data['password'], $user->password)) {
+        // Week 15 (W2): always run one bcrypt check, even for an unknown email. Without this, an unknown
+        // email answered in ~10 ms and a real one in ~230 ms, so the timing revealed which accounts exist.
+        $passwordOk = Hash::check($data['password'], $user?->password ?? self::dummyHash());
+
+        if (! $user || ! $passwordOk) {
             // Same message for unknown email and wrong password, so accounts can't be probed.
             Log::channel('automation')->notice('auth.login_failed', ['ip' => $request->ip()]);
 
@@ -52,5 +56,17 @@ class AuthController extends Controller
     public function me(Request $request): UserResource
     {
         return new UserResource($request->user());
+    }
+
+    /**
+     * bcrypt hash (cost 12, same as BCRYPT_ROUNDS) of a random value nobody knows. It is not a secret:
+     * it only makes the unknown-email path do the same amount of work as a real password check.
+     * A fixed value is used because making a new hash on every request would cost a second bcrypt.
+     */
+    private const DUMMY_HASH = '$2y$12$3vJ2TguUuaSD27yq2ixf5.x.nf8e/cp0nZCnAcl9HHTmbeTkPA8hC';
+
+    private static function dummyHash(): string
+    {
+        return self::DUMMY_HASH;
     }
 }

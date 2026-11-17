@@ -1,0 +1,441 @@
+(node:82743) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+newman
+
+Certificate Generation Queue – Week 15 integration tests
+
+❏ 00 Setup
+↳ Health
+  GET https://localhost:8443/api/v1/health [200 OK, 523B, 43ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200, database ok
+  ✓  generator reachable
+
+↳ Login approver
+  POST https://localhost:8443/api/v1/auth/login [200 OK, 642B, 231ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 and a token
+
+↳ Login custodian
+  POST https://localhost:8443/api/v1/auth/login [200 OK, 652B, 230ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 and a token
+
+↳ Login juan
+  POST https://localhost:8443/api/v1/auth/login [200 OK, 640B, 230ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 and a token
+
+↳ Login maria
+  POST https://localhost:8443/api/v1/auth/login [200 OK, 639B, 228ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 and a token
+
+❏ 01 Normal path
+↳ Requester submits (with Idempotency-Key)
+  POST https://localhost:8443/api/v1/requests [201 Created, 812B, 12ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  201 created as submitted
+
+↳ Save the key used
+  GET https://localhost:8443/api/v1/auth/me [200 OK, 533B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 me
+
+↳ Approver approves
+  POST https://localhost:8443/api/v1/requests/13/approve [202 Accepted, 924B, 36ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  202 accepted and queued
+
+↳ Poll until generated
+  GET https://localhost:8443/api/v1/requests/13 [200 OK, 1.49kB, 11ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated
+
+↳ Poll until generated
+  GET https://localhost:8443/api/v1/requests/13 [200 OK, 2.15kB, 26ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Poll until generated: status=generated attempts=1 pol
+  │ ls=2'
+  └
+  ✓  reaches generated (status=generated, attempts=1)
+  ✓  generated on attempt 1
+
+↳ Custodian verifies
+  POST https://localhost:8443/api/v1/certificates/1/verify [200 OK, 1.23kB, 24ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 verified
+
+↳ Custodian releases
+  POST https://localhost:8443/api/v1/certificates/1/release [200 OK, 1.26kB, 14ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 released
+
+↳ Requester downloads PDF
+  GET https://localhost:8443/api/v1/certificates/1/download [200 OK, 1.71kB, 11ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 application/pdf
+  ✓  X-Content-SHA256 matches the hash recorded at generation
+  1. [H] PDF is not cached (Cache-Control: no-store)
+
+↳ Requester acknowledges
+  POST https://localhost:8443/api/v1/certificates/1/acknowledge [200 OK, 1.07kB, 11ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 acknowledged
+
+↳ Requester lists own requests
+  GET https://localhost:8443/api/v1/requests [200 OK, 2.19kB, 10ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 and includes the new request
+  ✓  only own requests (no requester block for requesters)
+
+❏ 02 Invalid and boundary input
+↳ Missing certificate_type
+  POST https://localhost:8443/api/v1/requests [422 Unprocessable Entity, 604B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+  ✓  names the field
+
+↳ Unknown certificate_type
+  POST https://localhost:8443/api/v1/requests [422 Unprocessable Entity, 610B, 10ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+
+↳ Purpose 4 characters (below minimum)
+  POST https://localhost:8443/api/v1/requests [422 Unprocessable Entity, 607B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+  ✓  names purpose
+
+↳ Purpose exactly 5 characters (boundary, accepted)
+  POST https://localhost:8443/api/v1/requests [201 Created, 773B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  201 created
+
+↳ Purpose exactly 255 characters (boundary, accepted)
+  POST https://localhost:8443/api/v1/requests [201 Created, 1.03kB, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  201 created
+
+↳ Purpose 256 characters (above maximum)
+  POST https://localhost:8443/api/v1/requests [422 Unprocessable Entity, 627B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+
+↳ Malformed JSON body
+  POST https://localhost:8443/api/v1/requests [422 Unprocessable Entity, 649B, 10ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  2. 400 MALFORMED_JSON
+  3. does not pretend fields are missing
+
+↳ Invalid Idempotency-Key format
+  POST https://localhost:8443/api/v1/requests [400 Bad Request, 528B, 11ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  400 BAD_REQUEST
+
+↳ Unknown status filter
+  GET https://localhost:8443/api/v1/requests?status=bogus [422 Unprocessable Entity, 599B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+
+↳ Reject without a reason
+  POST https://localhost:8443/api/v1/requests/13/reject [422 Unprocessable Entity, 597B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+
+↳ Verify with the wrong certificate number
+  POST https://localhost:8443/api/v1/certificates/1/verify [422 Unprocessable Entity, 553B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+
+❏ 03 Unauthenticated (401)
+↳ No token
+  GET https://localhost:8443/api/v1/requests [401 Unauthorized, 478B, 5ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  401 UNAUTHENTICATED
+
+↳ Made-up token
+  GET https://localhost:8443/api/v1/auth/me [401 Unauthorized, 478B, 6ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  401 UNAUTHENTICATED
+
+↳ Wrong password for a real account #1
+  POST https://localhost:8443/api/v1/auth/login [401 Unauthorized, 540B, 229ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  401 INVALID_CREDENTIALS
+
+↳ Unknown email #1
+  POST https://localhost:8443/api/v1/auth/login [401 Unauthorized, 540B, 10ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  401 INVALID_CREDENTIALS
+  ✓  same message as a wrong password
+
+↳ Wrong password for a real account #2
+  POST https://localhost:8443/api/v1/auth/login [401 Unauthorized, 540B, 225ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  401 INVALID_CREDENTIALS
+
+↳ Unknown email #2
+  POST https://localhost:8443/api/v1/auth/login [401 Unauthorized, 540B, 10ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  401 INVALID_CREDENTIALS
+  ✓  same message as a wrong password
+
+↳ [H] Timing: unknown email is not noticeably faster
+  GET https://localhost:8443/api/v1/health [200 OK, 523B, 17ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'login timing ms: wrong password avg=227, unknown emai
+  │ l avg=10'
+  └
+  4. [H] unknown-email login takes at least 50% of a wrong-password login (10 ms vs 227 ms)
+
+❏ 04 Forbidden (403)
+↳ Requester tries to approve
+  POST https://localhost:8443/api/v1/requests/13/approve [403 Forbidden, 537B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  403 FORBIDDEN
+
+↳ Requester opens the review queue
+  GET https://localhost:8443/api/v1/review-queue [403 Forbidden, 537B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  403 FORBIDDEN
+
+↳ Requester opens automation metrics
+  GET https://localhost:8443/api/v1/automation/jobs [403 Forbidden, 537B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  403 FORBIDDEN
+
+↳ Approver tries to release
+  POST https://localhost:8443/api/v1/certificates/1/release [403 Forbidden, 537B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  403 FORBIDDEN
+
+↳ Custodian tries to submit a request
+  POST https://localhost:8443/api/v1/requests [403 Forbidden, 537B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  403 FORBIDDEN
+
+↳ Approver tries to acknowledge
+  POST https://localhost:8443/api/v1/certificates/1/acknowledge [403 Forbidden, 537B, 14ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  403 FORBIDDEN
+
+❏ 05 Not found (404/405)
+↳ Request that does not exist
+  GET https://localhost:8443/api/v1/requests/99999999 [404 Not Found, 533B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  404 NOT_FOUND
+
+↳ Another requester's request
+  GET https://localhost:8443/api/v1/requests/13 [404 Not Found, 533B, 12ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  404 NOT_FOUND
+
+↳ Download another requester's certificate
+  GET https://localhost:8443/api/v1/certificates/1/download [404 Not Found, 533B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  404 NOT_FOUND
+
+↳ Acknowledge another requester's certificate
+  POST https://localhost:8443/api/v1/certificates/1/acknowledge [404 Not Found, 533B, 10ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  404 NOT_FOUND
+
+↳ Unknown route
+  GET https://localhost:8443/api/v1/does-not-exist [404 Not Found, 481B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  404 NOT_FOUND
+
+↳ Wrong HTTP method
+  DELETE https://localhost:8443/api/v1/requests/13 [405 Method Not Allowed, 498B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  405 METHOD_NOT_ALLOWED
+
+❏ 06 Duplicate and conflict (409)
+↳ Same Idempotency-Key, same body (retry)
+  POST https://localhost:8443/api/v1/requests [200 OK, 798B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 returns the ORIGINAL request
+
+↳ Same Idempotency-Key, different body
+  POST https://localhost:8443/api/v1/requests [409 Conflict, 565B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  409 DUPLICATE_REQUEST
+
+↳ Approve an already-processed request
+  POST https://localhost:8443/api/v1/requests/13/approve [409 Conflict, 564B, 11ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  409 INVALID_STATE
+
+↳ Release twice
+  POST https://localhost:8443/api/v1/certificates/1/release [409 Conflict, 564B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  409 INVALID_STATE
+
+↳ Requeue an item that is not in review
+  POST https://localhost:8443/api/v1/requests/13/requeue [409 Conflict, 564B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  409 INVALID_STATE
+
+❏ 07 Hardening checks
+↳ [H] Security headers on an authenticated response
+  GET https://localhost:8443/api/v1/auth/me [200 OK, 533B, 10ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200
+  5. [H] Cache-Control: no-store
+  6. [H] X-Frame-Options: DENY
+  7. [H] Content-Security-Policy: default-src 'none'
+  8. [H] Referrer-Policy: no-referrer
+  ✓  X-Content-Type-Options: nosniff
+  9. [H] no X-Powered-By (PHP version not disclosed)
+
+↳ [H] Security headers on an error response
+  GET https://localhost:8443/api/v1/requests/99999999 [404 Not Found, 533B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  404
+ 10. [H] Cache-Control: no-store
+ 11. [H] no X-Powered-By
+
+↳ [H] Request list is paginated (no silent cut-off)
+  GET https://localhost:8443/api/v1/requests?per_page=2&page=1 [200 OK, 8.28kB, 12ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200
+ 12. [H] at most 2 items on the page
+ 13. [H] meta.total and meta.last_page tell the client how much exists
+
+↳ [H] Oversized page size is refused
+  GET https://localhost:8443/api/v1/requests?per_page=1000 [200 OK, 8.28kB, 10ms]
+  ✓  [global] response has an X-Correlation-ID
+ 14. 422 VALIDATION_FAILED
+
+┌─────────────────────────┬───────────────────┬──────────────────┐
+│                         │          executed │           failed │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              iterations │                 1 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│                requests │                54 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│            test-scripts │               108 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│      prerequest-scripts │                 3 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              assertions │               159 │               14 │
+├─────────────────────────┴───────────────────┴──────────────────┤
+│ total run duration: 4.5s                                       │
+├────────────────────────────────────────────────────────────────┤
+│ total data received: 31.46kB (approx)                          │
+├────────────────────────────────────────────────────────────────┤
+│ average response time: 35ms [min: 5ms, max: 231ms, s.d.: 68ms] │
+└────────────────────────────────────────────────────────────────┘
+
+[31m   # [39m[31m failure        [39m[31m detail                                                                                 [39m
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 01.  AssertionError  [H] PDF is not cached (Cache-Control: no-store)                                        
+                      expected 'no-cache, private' to include 'no-store'                                     
+                      at assertion:2 in test-script                                                          
+                      inside "01 Normal path / Requester downloads PDF"                                      
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 02.  AssertionError  400 MALFORMED_JSON                                                                     
+                      expected response to have status code 400 but got 422                                  
+                      at assertion:0 in test-script                                                          
+                      inside "02 Invalid and boundary input / Malformed JSON body"                           
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 03.  AssertionError  does not pretend fields are missing                                                    
+                      expected { …(2) } to be undefined                                                      
+                      at assertion:1 in test-script                                                          
+                      inside "02 Invalid and boundary input / Malformed JSON body"                           
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 04.  AssertionError  [H] unknown-email login takes at least 50% of a wrong-password login (10 ms vs 227 ms) 
+                      expected 10 to be at least 113.5                                                       
+                      at assertion:0 in test-script                                                          
+                      inside "03 Unauthenticated (401) / [H] Timing: unknown email is not noticeably faster" 
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 05.  AssertionError  [H] Cache-Control: no-store                                                            
+                      expected 'no-cache, private' to include 'no-store'                                     
+                      at assertion:1 in test-script                                                          
+                      inside "07 Hardening checks / [H] Security headers on an authenticated response"       
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 06.  AssertionError  [H] X-Frame-Options: DENY                                                              
+                      expected '' to deeply equal 'DENY'                                                     
+                      at assertion:2 in test-script                                                          
+                      inside "07 Hardening checks / [H] Security headers on an authenticated response"       
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 07.  AssertionError  [H] Content-Security-Policy: default-src 'none'                                        
+                      expected '' to include 'default-src \'none\''                                          
+                      at assertion:3 in test-script                                                          
+                      inside "07 Hardening checks / [H] Security headers on an authenticated response"       
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 08.  AssertionError  [H] Referrer-Policy: no-referrer                                                       
+                      expected '' to deeply equal 'no-referrer'                                              
+                      at assertion:4 in test-script                                                          
+                      inside "07 Hardening checks / [H] Security headers on an authenticated response"       
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 09.  AssertionError  [H] no X-Powered-By (PHP version not disclosed)                                        
+                      expected true to be false                                                              
+                      at assertion:6 in test-script                                                          
+                      inside "07 Hardening checks / [H] Security headers on an authenticated response"       
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 10.  AssertionError  [H] Cache-Control: no-store                                                            
+                      expected 'no-cache, private' to include 'no-store'                                     
+                      at assertion:1 in test-script                                                          
+                      inside "07 Hardening checks / [H] Security headers on an error response"               
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 11.  AssertionError  [H] no X-Powered-By                                                                    
+                      expected true to be false                                                              
+                      at assertion:2 in test-script                                                          
+                      inside "07 Hardening checks / [H] Security headers on an error response"               
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 12.  AssertionError  [H] at most 2 items on the page                                                        
+                      expected 15 to be at most 2                                                            
+                      at assertion:1 in test-script                                                          
+                      inside "07 Hardening checks / [H] Request list is paginated (no silent cut-off)"       
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 13.  AssertionError  [H] meta.total and meta.last_page tell the client how much exists                      
+                      expected undefined to be an object                                                     
+                      at assertion:2 in test-script                                                          
+                      inside "07 Hardening checks / [H] Request list is paginated (no silent cut-off)"       
+[90m     [39m[90m                [39m[90m                                                                                        [39m
+ 14.  AssertionError  422 VALIDATION_FAILED                                                                  
+                      expected response to have status code 422 but got 200                                  
+                      at assertion:0 in test-script                                                          
+                      inside "07 Hardening checks / [H] Oversized page size is refused"                      
+newman exit code: 1

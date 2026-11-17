@@ -6,3 +6,6 @@ Thumbs.db
 
 # Week 14: local TLS keys and certificates (scripts/dev-certs.sh)
 certs/
+
+# Course module (copyrighted, large) – keep out of the repo
+*.docx

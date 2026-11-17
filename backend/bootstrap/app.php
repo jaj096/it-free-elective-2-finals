@@ -4,7 +4,9 @@ use App\Exceptions\InvalidStateTransition;
 use App\Http\ApiError;
 use App\Http\Middleware\AssignCorrelationId;
 use App\Http\Middleware\EnsureRole;
+use App\Http\Middleware\RejectMalformedJson;
 use App\Http\Middleware\RequireHttps;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -37,6 +39,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Week 14: only the local TLS proxy (Caddy) may tell us the original request was HTTPS.
         $middleware->trustProxies(at: ['127.0.0.1', '::1']);
         $middleware->prependToGroup('api', RequireHttps::class);
+
+        // Week 15: hardening headers on every API response (global, so 404s for unknown URLs get them too),
+        // and a clear 400 for broken JSON instead of a misleading 422.
+        $middleware->append(SecurityHeaders::class);
+        $middleware->appendToGroup('api', RejectMalformedJson::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $isApi = fn (Request $request) => $request->is('api/*') || $request->expectsJson();

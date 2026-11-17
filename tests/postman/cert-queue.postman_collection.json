@@ -1,0 +1,3195 @@
+{
+  "info": {
+    "name": "Certificate Generation Queue – Week 15 integration tests",
+    "description": "PFEBSIT 002 Week 15 (IA6). Fictional data only. Run with scripts/run-week15.sh, or import into Postman together with the environment file. Folders 08-10 need the generator mode switched (see docs/week15).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Runs after EVERY request.",
+          "pm.test('[global] response has an X-Correlation-ID', () => pm.response.to.have.header('X-Correlation-ID'));",
+          "if (pm.response.code >= 400) {",
+          "  pm.test('[global] error uses the safe format (code, message, correlation_id; no stack trace)', () => {",
+          "    const text = pm.response.text();",
+          "    pm.expect(text).to.not.match(/Stack trace|vendor\\/|\\.php|Exception/);",
+          "    const e = pm.response.json().error;",
+          "    pm.expect(e.code).to.be.a('string');",
+          "    pm.expect(e.message).to.be.a('string');",
+          "    pm.expect(e.correlation_id).to.eql(pm.response.headers.get('X-Correlation-ID'));",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "00 Setup",
+      "description": "Health check and one login per role. Tokens are stored in the environment.",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200, database ok', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().checks.database).to.eql('ok');",
+                  "});",
+                  "pm.test('generator reachable', () => pm.expect(pm.response.json().checks.generator).to.eql('ok'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login approver",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"approver@example.test\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 and a token', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().data.token).to.be.a('string');",
+                  "  pm.expect(pm.response.json().data.expires_at).to.be.a('string');",
+                  "});",
+                  "pm.environment.set('token_approver', pm.response.json().data.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login custodian",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"custodian@example.test\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 and a token', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().data.token).to.be.a('string');",
+                  "  pm.expect(pm.response.json().data.expires_at).to.be.a('string');",
+                  "});",
+                  "pm.environment.set('token_custodian', pm.response.json().data.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login juan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan@example.test\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 and a token', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().data.token).to.be.a('string');",
+                  "  pm.expect(pm.response.json().data.expires_at).to.be.a('string');",
+                  "});",
+                  "pm.environment.set('token_juan', pm.response.json().data.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login maria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"maria@example.test\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 and a token', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().data.token).to.be.a('string');",
+                  "  pm.expect(pm.response.json().data.expires_at).to.be.a('string');",
+                  "});",
+                  "pm.environment.set('token_maria', pm.response.json().data.token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 Normal path",
+      "description": "R1-R4: submit -> approve -> generated by the worker -> verify -> release -> download -> acknowledge.",
+      "item": [
+        {
+          "name": "Requester submits (with Idempotency-Key)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idemKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_type\": \"enrollment\",\n  \"purpose\": \"Scholarship application (Week 15 collection)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('idemKey', 'pm-' + Date.now() + '-' + Math.floor(Math.random() * 1e6));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 created as submitted', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  pm.expect(pm.response.json().data.status).to.eql('submitted');",
+                  "});",
+                  "pm.environment.set('reqId', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Save the key used",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('mainKey', pm.environment.get('idemKey'));",
+                  "pm.test('200 me', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Approver approves",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{reqId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{reqId}}",
+                "approve"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('202 accepted and queued', () => {",
+                  "  pm.response.to.have.status(202);",
+                  "  pm.expect(pm.response.json().data.status).to.eql('queued');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Poll until generated",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{reqId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{reqId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const n = Number(pm.environment.get('pollCount') || 0);",
+                  "if (n > 0) { setTimeout(() => {}, 2000); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "const n = Number(pm.environment.get('pollCount') || 0) + 1;",
+                  "if (d.status !== 'generated' && n < 30) {",
+                  "  pm.environment.set('pollCount', n);",
+                  "  postman.setNextRequest(pm.info.requestName);",
+                  "} else {",
+                  "  pm.environment.set('pollCount', 0);",
+                  "  console.log('Poll until generated: status=' + d.status + ' attempts=' + d.attempts + ' polls=' + n);",
+                  "  pm.test('reaches generated (status=' + d.status + ', attempts=' + d.attempts + ')', () => pm.expect(d.status).to.eql('generated'));",
+                  "",
+                  "  pm.test('generated on attempt 1', () => pm.expect(d.attempts).to.eql(1));",
+                  "  pm.environment.set('certId', d.certificate.id);",
+                  "  pm.environment.set('certNumber', d.certificate.certificate_number);",
+                  "  pm.environment.set('certSha', d.certificate.sha256);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Custodian verifies",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_custodian}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/certificates/{{certId}}/verify",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "certificates",
+                "{{certId}}",
+                "verify"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_number\": \"{{certNumber}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 verified', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().data.status).to.eql('verified'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Custodian releases",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_custodian}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/certificates/{{certId}}/release",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "certificates",
+                "{{certId}}",
+                "release"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 released', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().data.status).to.eql('released'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Requester downloads PDF",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/certificates/{{certId}}/download",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "certificates",
+                "{{certId}}",
+                "download"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 application/pdf', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/pdf');",
+                  "});",
+                  "pm.test('X-Content-SHA256 matches the hash recorded at generation', () =>",
+                  "  pm.expect(pm.response.headers.get('X-Content-SHA256')).to.eql(pm.environment.get('certSha')));",
+                  "pm.test('[H] PDF is not cached (Cache-Control: no-store)', () =>",
+                  "  pm.expect(pm.response.headers.get('Cache-Control') || '').to.include('no-store'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Requester acknowledges",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/certificates/{{certId}}/acknowledge",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "certificates",
+                "{{certId}}",
+                "acknowledge"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 acknowledged', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().data.status).to.eql('acknowledged'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Requester lists own requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 and includes the new request', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().data.map(r => r.id)).to.include(pm.environment.get('reqId'));",
+                  "});",
+                  "pm.test('only own requests (no requester block for requesters)', () =>",
+                  "  pm.response.json().data.forEach(r => pm.expect(r.requester).to.be.undefined));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 Invalid and boundary input",
+      "description": "R5: server-side validation is authoritative; boundaries at 5 and 255 characters.",
+      "item": [
+        {
+          "name": "Missing certificate_type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"purpose\": \"Valid purpose\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422 VALIDATION_FAILED', () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_FAILED');",
+                  "});",
+                  "pm.test('names the field', () => pm.expect(pm.response.json().error.fields).to.have.property('certificate_type'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unknown certificate_type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_type\": \"bogus\",\n  \"purpose\": \"Valid purpose\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422 VALIDATION_FAILED', () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_FAILED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Purpose 4 characters (below minimum)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_type\": \"enrollment\",\n  \"purpose\": \"abcd\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422 VALIDATION_FAILED', () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_FAILED');",
+                  "});",
+                  "pm.test('names purpose', () => pm.expect(pm.response.json().error.fields).to.have.property('purpose'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Purpose exactly 5 characters (boundary, accepted)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_type\": \"enrollment\",\n  \"purpose\": \"abcde\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 created', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Purpose exactly 255 characters (boundary, accepted)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_type\": \"good_moral\",\n  \"purpose\": \"ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 created', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Purpose 256 characters (above maximum)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_type\": \"good_moral\",\n  \"purpose\": \"pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422 VALIDATION_FAILED', () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_FAILED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Malformed JSON body",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"certificate_type\":\"enrollment\",\"purpose\":",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 MALFORMED_JSON', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('MALFORMED_JSON');",
+                  "});",
+                  "pm.test('does not pretend fields are missing', () => pm.expect(pm.response.json().error.fields).to.be.undefined);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid Idempotency-Key format",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "bad key!"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_type\": \"enrollment\",\n  \"purpose\": \"Valid purpose\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 BAD_REQUEST', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('BAD_REQUEST');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unknown status filter",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests?status=bogus",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "bogus"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422 VALIDATION_FAILED', () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_FAILED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject without a reason",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{reqId}}/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{reqId}}",
+                "reject"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422 VALIDATION_FAILED', () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_FAILED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify with the wrong certificate number",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_custodian}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/certificates/{{certId}}/verify",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "certificates",
+                "{{certId}}",
+                "verify"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_number\": \"ULS-0000-000000\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422 VALIDATION_FAILED', () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_FAILED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 Unauthenticated (401)",
+      "description": "R6: no/invalid token and bad credentials. Includes the account-enumeration timing check (W2).",
+      "item": [
+        {
+          "name": "No token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 UNAUTHENTICATED', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('UNAUTHENTICATED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Made-up token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer 1|not-a-real-token"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 UNAUTHENTICATED', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('UNAUTHENTICATED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Wrong password for a real account #1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan@example.test\",\n  \"password\": \"wrong-password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 INVALID_CREDENTIALS', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('INVALID_CREDENTIALS');",
+                  "});",
+                  "pm.environment.set('t_known_1', pm.response.responseTime);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unknown email #1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nobody-{{$timestamp}}-1@example.test\",\n  \"password\": \"wrong-password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 INVALID_CREDENTIALS', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('INVALID_CREDENTIALS');",
+                  "});",
+                  "pm.environment.set('t_unknown_1', pm.response.responseTime);",
+                  "pm.test('same message as a wrong password', () => pm.expect(pm.response.json().error.message).to.eql('Email or password is incorrect.'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Wrong password for a real account #2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan@example.test\",\n  \"password\": \"wrong-password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 INVALID_CREDENTIALS', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('INVALID_CREDENTIALS');",
+                  "});",
+                  "pm.environment.set('t_known_2', pm.response.responseTime);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unknown email #2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nobody-{{$timestamp}}-2@example.test\",\n  \"password\": \"wrong-password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 INVALID_CREDENTIALS', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('INVALID_CREDENTIALS');",
+                  "});",
+                  "pm.environment.set('t_unknown_2', pm.response.responseTime);",
+                  "pm.test('same message as a wrong password', () => pm.expect(pm.response.json().error.message).to.eql('Email or password is incorrect.'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[H] Timing: unknown email is not noticeably faster",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const known = (Number(pm.environment.get('t_known_1')) + Number(pm.environment.get('t_known_2'))) / 2;",
+                  "const unknown = (Number(pm.environment.get('t_unknown_1')) + Number(pm.environment.get('t_unknown_2'))) / 2;",
+                  "console.log('login timing ms: wrong password avg=' + known + ', unknown email avg=' + unknown);",
+                  "pm.test('[H] unknown-email login takes at least 50% of a wrong-password login (' + unknown + ' ms vs ' + known + ' ms)', () =>",
+                  "  pm.expect(unknown).to.be.at.least(known * 0.5));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 Forbidden (403)",
+      "description": "R7: function-level authorization is enforced on the server for every role.",
+      "item": [
+        {
+          "name": "Requester tries to approve",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{reqId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{reqId}}",
+                "approve"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 FORBIDDEN', () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('FORBIDDEN');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Requester opens the review queue",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/review-queue",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "review-queue"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 FORBIDDEN', () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('FORBIDDEN');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Requester opens automation metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/automation/jobs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "automation",
+                "jobs"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 FORBIDDEN', () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('FORBIDDEN');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Approver tries to release",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/certificates/{{certId}}/release",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "certificates",
+                "{{certId}}",
+                "release"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 FORBIDDEN', () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('FORBIDDEN');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Custodian tries to submit a request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_custodian}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_type\": \"enrollment\",\n  \"purpose\": \"Not allowed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 FORBIDDEN', () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('FORBIDDEN');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Approver tries to acknowledge",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/certificates/{{certId}}/acknowledge",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "certificates",
+                "{{certId}}",
+                "acknowledge"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 FORBIDDEN', () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('FORBIDDEN');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 Not found (404/405)",
+      "description": "R8: object-level authorization - other people's records answer 404 so IDs cannot be probed.",
+      "item": [
+        {
+          "name": "Request that does not exist",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/99999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "99999999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 NOT_FOUND', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Another requester's request",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_maria}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{reqId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{reqId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 NOT_FOUND', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Download another requester's certificate",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_maria}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/certificates/{{certId}}/download",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "certificates",
+                "{{certId}}",
+                "download"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 NOT_FOUND', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Acknowledge another requester's certificate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_maria}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/certificates/{{certId}}/acknowledge",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "certificates",
+                "{{certId}}",
+                "acknowledge"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 NOT_FOUND', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unknown route",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/does-not-exist",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "does-not-exist"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 NOT_FOUND', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Wrong HTTP method",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{reqId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{reqId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('405 METHOD_NOT_ALLOWED', () => {",
+                  "  pm.response.to.have.status(405);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('METHOD_NOT_ALLOWED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 Duplicate and conflict (409)",
+      "description": "R9: duplicate submits and repeated actions never create a second record or skip a state.",
+      "item": [
+        {
+          "name": "Same Idempotency-Key, same body (retry)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{mainKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_type\": \"enrollment\",\n  \"purpose\": \"Scholarship application (Week 15 collection)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 returns the ORIGINAL request', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().data.id).to.eql(pm.environment.get('reqId')); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Same Idempotency-Key, different body",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{mainKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_type\": \"good_moral\",\n  \"purpose\": \"Something else entirely\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 DUPLICATE_REQUEST', () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('DUPLICATE_REQUEST');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Approve an already-processed request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{reqId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{reqId}}",
+                "approve"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 INVALID_STATE', () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('INVALID_STATE');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Release twice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_custodian}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/certificates/{{certId}}/release",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "certificates",
+                "{{certId}}",
+                "release"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 INVALID_STATE', () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('INVALID_STATE');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Requeue an item that is not in review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{reqId}}/requeue",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{reqId}}",
+                "requeue"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 INVALID_STATE', () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('INVALID_STATE');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "07 Hardening checks",
+      "description": "Checks added for the Week 15 hardening sprint (marked [H]). These are expected to FAIL before the fixes.",
+      "item": [
+        {
+          "name": "[H] Security headers on an authenticated response",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const h = (n) => pm.response.headers.get(n) || '';",
+                  "pm.test('200', () => pm.response.to.have.status(200));",
+                  "pm.test('[H] Cache-Control: no-store', () => pm.expect(h('Cache-Control')).to.include('no-store'));",
+                  "pm.test('[H] X-Frame-Options: DENY', () => pm.expect(h('X-Frame-Options')).to.eql('DENY'));",
+                  "pm.test(\"[H] Content-Security-Policy: default-src 'none'\", () => pm.expect(h('Content-Security-Policy')).to.include(\"default-src 'none'\"));",
+                  "pm.test('[H] Referrer-Policy: no-referrer', () => pm.expect(h('Referrer-Policy')).to.eql('no-referrer'));",
+                  "pm.test('X-Content-Type-Options: nosniff', () => pm.expect(h('X-Content-Type-Options')).to.eql('nosniff'));",
+                  "pm.test('[H] no X-Powered-By (PHP version not disclosed)', () => pm.expect(pm.response.headers.has('X-Powered-By')).to.be.false);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[H] Security headers on an error response",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/99999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "99999999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404', () => pm.response.to.have.status(404));",
+                  "pm.test('[H] Cache-Control: no-store', () => pm.expect(pm.response.headers.get('Cache-Control') || '').to.include('no-store'));",
+                  "pm.test('[H] no X-Powered-By', () => pm.expect(pm.response.headers.has('X-Powered-By')).to.be.false);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[H] Request list is paginated (no silent cut-off)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests?per_page=2&page=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "2"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "pm.test('200', () => pm.response.to.have.status(200));",
+                  "pm.test('[H] at most 2 items on the page', () => pm.expect(j.data.length).to.be.at.most(2));",
+                  "pm.test('[H] meta.total and meta.last_page tell the client how much exists', () => {",
+                  "  pm.expect(j.meta).to.be.an('object');",
+                  "  pm.expect(j.meta.total).to.be.above(2);",
+                  "  pm.expect(j.meta.last_page).to.be.above(1);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[H] Oversized page size is refused",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests?per_page=1000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "1000"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422 VALIDATION_FAILED', () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_FAILED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "08 Dependency failure (generator 503)",
+      "description": "Run with GENERATOR_MODE=always_503. R10: a failing dependency ends in needs_review after exactly 3 attempts, with a safe message for the requester.",
+      "item": [
+        {
+          "name": "Requester submits",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idemKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_type\": \"enrollment\",\n  \"purpose\": \"Dependency failure test (generator 503)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('idemKey', 'pm-' + Date.now() + '-' + Math.floor(Math.random() * 1e6));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 created as submitted', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  pm.expect(pm.response.json().data.status).to.eql('submitted');",
+                  "});",
+                  "pm.environment.set('failReqId', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Approver approves",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{failReqId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{failReqId}}",
+                "approve"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('202 accepted and queued', () => {",
+                  "  pm.response.to.have.status(202);",
+                  "  pm.expect(pm.response.json().data.status).to.eql('queued');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Poll until needs_review",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{failReqId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{failReqId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const n = Number(pm.environment.get('pollCount') || 0);",
+                  "if (n > 0) { setTimeout(() => {}, 2000); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "const n = Number(pm.environment.get('pollCount') || 0) + 1;",
+                  "if (d.status !== 'needs_review' && n < 75) {",
+                  "  pm.environment.set('pollCount', n);",
+                  "  postman.setNextRequest(pm.info.requestName);",
+                  "} else {",
+                  "  pm.environment.set('pollCount', 0);",
+                  "  console.log('Poll until needs_review: status=' + d.status + ' attempts=' + d.attempts + ' polls=' + n);",
+                  "  pm.test('reaches needs_review (status=' + d.status + ', attempts=' + d.attempts + ')', () => pm.expect(d.status).to.eql('needs_review'));",
+                  "",
+                  "  pm.test('stopped after exactly 3 attempts', () => pm.expect(d.attempts).to.eql(3));",
+                  "  pm.test('staff see the technical reason', () => pm.expect(d.review_reason).to.be.a('string').and.not.empty);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Requester sees a safe message only",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{failReqId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{failReqId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "pm.test('200 needs_review', () => { pm.response.to.have.status(200); pm.expect(d.status).to.eql('needs_review'); });",
+                  "pm.test('no technical reason shown to the requester', () => {",
+                  "  pm.expect(d.review_reason).to.be.undefined;",
+                  "  pm.expect(d.status_message).to.eql('Needs review: staff have been notified');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Item is in the review queue",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/review-queue",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "review-queue"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 and contains the failed item', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().data.map(r => r.id)).to.include(pm.environment.get('failReqId')); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "09 Timeout (generator slow)",
+      "description": "Run with GENERATOR_MODE=slow (15 s; backend timeout 10 s). R11: a timeout is retried (bounded); the generator job_key idempotency returns the same PDF, so no duplicate is created.",
+      "item": [
+        {
+          "name": "Requester submits",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_juan}}"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idemKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificate_type\": \"enrollment\",\n  \"purpose\": \"Timeout test (generator slow)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('idemKey', 'pm-' + Date.now() + '-' + Math.floor(Math.random() * 1e6));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 created as submitted', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  pm.expect(pm.response.json().data.status).to.eql('submitted');",
+                  "});",
+                  "pm.environment.set('slowReqId', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Approver approves",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{slowReqId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{slowReqId}}",
+                "approve"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('202 accepted and queued', () => {",
+                  "  pm.response.to.have.status(202);",
+                  "  pm.expect(pm.response.json().data.status).to.eql('queued');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Poll until generated (timeout, then retry)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{slowReqId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{slowReqId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const n = Number(pm.environment.get('pollCount') || 0);",
+                  "if (n > 0) { setTimeout(() => {}, 2000); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "const n = Number(pm.environment.get('pollCount') || 0) + 1;",
+                  "if (d.status !== 'generated' && n < 60) {",
+                  "  pm.environment.set('pollCount', n);",
+                  "  postman.setNextRequest(pm.info.requestName);",
+                  "} else {",
+                  "  pm.environment.set('pollCount', 0);",
+                  "  console.log('Poll until generated (timeout, then retry): status=' + d.status + ' attempts=' + d.attempts + ' polls=' + n);",
+                  "  pm.test('reaches generated (status=' + d.status + ', attempts=' + d.attempts + ')', () => pm.expect(d.status).to.eql('generated'));",
+                  "",
+                  "  pm.test('needed more than one attempt (the first timed out)', () => pm.expect(d.attempts).to.be.within(2, 3));",
+                  "  pm.test('exactly one certificate', () => pm.expect(d.certificate).to.be.an('object'));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "History shows a retry was scheduled after the timeout",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{slowReqId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{slowReqId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const h = pm.response.json().data.history;",
+                  "const retry = h.find(x => x.action === 'generation_retry_scheduled');",
+                  "pm.test('a retry was scheduled', () => pm.expect(retry).to.be.an('object'));",
+                  "pm.test('the reason mentions the timeout', () => pm.expect((retry && retry.reason || '').toLowerCase()).to.match(/time|timeout|timed/));",
+                  "pm.test('generated exactly once', () => pm.expect(h.filter(x => x.action === 'generation_succeeded').length).to.eql(1));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "10 Recovery",
+      "description": "Run with GENERATOR_MODE=success after 08. R12: staff re-queue the failed item and it completes exactly once.",
+      "item": [
+        {
+          "name": "Health shows the generator is back",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('generator ok', () => pm.expect(pm.response.json().checks.generator).to.eql('ok'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Approver re-queues the failed item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{failReqId}}/requeue",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{failReqId}}",
+                "requeue"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Generator restored (Week 15 recovery test)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('202 queued, attempts reset', () => { pm.response.to.have.status(202); pm.expect(pm.response.json().data.status).to.eql('queued'); pm.expect(pm.response.json().data.attempts).to.eql(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Poll until generated",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{failReqId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{failReqId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const n = Number(pm.environment.get('pollCount') || 0);",
+                  "if (n > 0) { setTimeout(() => {}, 2000); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "const n = Number(pm.environment.get('pollCount') || 0) + 1;",
+                  "if (d.status !== 'generated' && n < 30) {",
+                  "  pm.environment.set('pollCount', n);",
+                  "  postman.setNextRequest(pm.info.requestName);",
+                  "} else {",
+                  "  pm.environment.set('pollCount', 0);",
+                  "  console.log('Poll until generated: status=' + d.status + ' attempts=' + d.attempts + ' polls=' + n);",
+                  "  pm.test('reaches generated (status=' + d.status + ', attempts=' + d.attempts + ')', () => pm.expect(d.status).to.eql('generated'));",
+                  "",
+                  "  pm.test('exactly one certificate', () => pm.expect(d.certificate).to.be.an('object'));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "History shows failure then recovery",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_approver}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/requests/{{failReqId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "requests",
+                "{{failReqId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const actions = pm.response.json().data.history.map(h => h.action);",
+                  "// Corrected after the baseline run (defect T2): the audit action is 'generation_succeeded'.",
+                  "pm.test('history contains sent_to_review, then requeued, then generation_succeeded', () => {",
+                  "  pm.expect(actions).to.include('sent_to_review');",
+                  "  pm.expect(actions.indexOf('sent_to_review')).to.be.below(actions.lastIndexOf('requeued'));",
+                  "  pm.expect(actions.lastIndexOf('requeued')).to.be.below(actions.lastIndexOf('generation_succeeded'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

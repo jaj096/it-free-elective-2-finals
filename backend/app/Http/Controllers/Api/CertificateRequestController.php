@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Notifications\RequestUpdate;
 use App\Services\CertificateWorkflow;
 use App\Services\Notifier;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -29,6 +30,8 @@ class CertificateRequestController extends Controller
     {
         $data = $request->validate([
             'status' => ['nullable', 'string', Rule::in(array_column(RequestStatus::cases(), 'value'))],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'page' => ['nullable', 'integer', 'min:1'],
         ]);
 
         $user = $request->user();
@@ -39,7 +42,11 @@ class CertificateRequestController extends Controller
         // Staff queues read oldest first; requesters see their newest first.
         $query = $user->hasRole(Role::Requester) ? $query->latest('id') : $query->oldest('id');
 
-        return CertificateRequestResource::collection($query->limit(200)->get());
+        // Week 15 (W5): paginated. Before, the list stopped at 200 rows without saying so, so staff
+        // could miss requests. meta.total / meta.last_page now tell the client exactly how much exists.
+        return CertificateRequestResource::collection(
+            $query->paginate((int) ($data['per_page'] ?? 50))->withQueryString()
+        );
     }
 
     public function show(Request $request, CertificateRequest $certificateRequest): CertificateRequestResource
@@ -71,17 +78,44 @@ class CertificateRequestController extends Controller
         if ($key !== null) {
             abort_unless(preg_match('/^[A-Za-z0-9-]{8,64}$/', $key), 400, 'Invalid Idempotency-Key.');
 
-            $existing = CertificateRequest::where('requester_id', $user->id)->where('idempotency_key', $key)->first();
-            if ($existing) {
-                if ($existing->idempotency_hash !== $hash) {
-                    return ApiError::response(409, 'DUPLICATE_REQUEST', 'This Idempotency-Key was already used with different data.');
-                }
-
-                return (new CertificateRequestResource($existing->load('requester')))->response()->setStatusCode(200);
+            if ($replay = $this->replayIdempotent($user, $key, $hash)) {
+                return $replay;
             }
         }
 
-        $certificateRequest = DB::transaction(function () use ($user, $data, $key, $hash) {
+        try {
+            $certificateRequest = $this->createRequest($user, $data, $key, $hash);
+        } catch (UniqueConstraintViolationException $e) {
+            // Week 15 (W6): two submits with the same key can both pass the check above at the same moment.
+            // The UNIQUE(requester_id, idempotency_key) index stops the second insert; before, that surfaced
+            // as a 500. Now the loser answers exactly like a normal retry.
+            if ($key !== null && ($replay = $this->replayIdempotent($user, $key, $hash))) {
+                return $replay;
+            }
+            throw $e;
+        }
+
+        return (new CertificateRequestResource($certificateRequest->load('requester')))->response()->setStatusCode(201);
+    }
+
+    /** 200 with the original request (same data) or 409 (different data); null if the key is unused. */
+    private function replayIdempotent(User $user, string $key, string $hash): ?JsonResponse
+    {
+        $existing = CertificateRequest::where('requester_id', $user->id)->where('idempotency_key', $key)->first();
+        if (! $existing) {
+            return null;
+        }
+        if ($existing->idempotency_hash !== $hash) {
+            return ApiError::response(409, 'DUPLICATE_REQUEST', 'This Idempotency-Key was already used with different data.');
+        }
+
+        return (new CertificateRequestResource($existing->load('requester')))->response()->setStatusCode(200);
+    }
+
+    /** @param array{certificate_type: string, purpose: string} $data */
+    private function createRequest(User $user, array $data, ?string $key, string $hash): CertificateRequest
+    {
+        return DB::transaction(function () use ($user, $data, $key, $hash) {
             $certificateRequest = CertificateRequest::create([
                 'requester_id' => $user->id,
                 'certificate_type' => $data['certificate_type'],
@@ -95,8 +129,6 @@ class CertificateRequestController extends Controller
 
             return $certificateRequest;
         });
-
-        return (new CertificateRequestResource($certificateRequest->load('requester')))->response()->setStatusCode(201);
     }
 
     /** Approves and queues generation. Returns 202 because the work happens in the background. */

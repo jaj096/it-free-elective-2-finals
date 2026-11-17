@@ -1,0 +1,9 @@
+Run at 2026-11-17 23:30:03 +0800
+commit: 254290a
+branch: week15
+php: 8.5.9
+laravel: Laravel Framework 13.39.0
+node: v24.16.0   newman: 6.2.1
+database: sqlite   queue: database
+API: https://localhost:8443/api/v1 (Caddy -> php artisan serve, PHP_CLI_SERVER_WORKERS=4)
+data: fictional seed accounts (juan, maria, approver, custodian @example.test)

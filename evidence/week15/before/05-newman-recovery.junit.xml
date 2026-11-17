@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Certificate Generation Queue – Week 15 integration tests" tests="5" time="0.087">
+  <testsuite name="10 Recovery / Health shows the generator is back" id="cc47f0c2-21a4-4400-be04-bf800b5e67d0" timestamp="2026-11-17T15:35:05.824Z" tests="2" failures="0" errors="0" time="0.039">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.039" classname="10RecoveryHealthShowsTheGeneratorIsBack"/>
+    <testcase name="generator ok" time="0.039" classname="10RecoveryHealthShowsTheGeneratorIsBack"/>
+  </testsuite>
+  <testsuite name="10 Recovery / Approver re-queues the failed item" id="6a54f5ee-4349-4094-85b1-7353539651b1" timestamp="2026-11-17T15:35:05.824Z" tests="2" failures="0" errors="0" time="0.015">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.015" classname="10RecoveryApproverReQueuesTheFailedItem"/>
+    <testcase name="202 queued, attempts reset" time="0.015" classname="10RecoveryApproverReQueuesTheFailedItem"/>
+  </testsuite>
+  <testsuite name="10 Recovery / Poll until generated" id="4f9e08a2-622d-4ebc-baa3-ea53a599b75c" timestamp="2026-11-17T15:35:05.824Z" tests="3" failures="0" errors="0" time="0.011">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.013" classname="10RecoveryPollUntilGenerated"/>
+    <testcase name="reaches generated (status=generated, attempts=1)" time="0.013" classname="10RecoveryPollUntilGenerated"/>
+    <testcase name="exactly one certificate" time="0.013" classname="10RecoveryPollUntilGenerated"/>
+  </testsuite>
+  <testsuite name="10 Recovery / History shows failure then recovery" id="c64c9c05-7d0b-4938-a2a9-30f1db18497b" timestamp="2026-11-17T15:35:05.824Z" tests="2" failures="1" errors="0" time="0.011">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.011" classname="10RecoveryHistoryShowsFailureThenRecovery"/>
+    <testcase name="history contains needs_review then requeued then generated" time="0.011" classname="10RecoveryHistoryShowsFailureThenRecovery">
+      <failure type="AssertionFailure" message="expected 9 to be below -1">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b30fe959-8c03-4e19-8f17-c3abf0e416d5.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 10 Recovery / History shows failure then recovery.]]>
+        <![CDATA[Test description: history contains needs_review then requeued then generated.]]>
+        <![CDATA[Error message: expected 9 to be below -1.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 9 to be below -1
+   at Object.eval sandbox-script.js:1:4).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+</testsuites>

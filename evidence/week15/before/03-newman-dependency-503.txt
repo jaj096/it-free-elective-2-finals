@@ -1,0 +1,289 @@
+(node:82767) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+newman
+
+Certificate Generation Queue – Week 15 integration tests
+
+❏ 08 Dependency failure (generator 503)
+↳ Requester submits
+  POST https://localhost:8443/api/v1/requests [201 Created, 807B, 34ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  201 created as submitted
+
+↳ Approver approves
+  POST https://localhost:8443/api/v1/requests/16/approve [202 Accepted, 919B, 13ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  202 accepted and queued
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 1.48kB, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 1.96kB, 20ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 1.96kB, 25ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 1.96kB, 25ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 1.96kB, 17ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 1.96kB, 26ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 1.96kB, 23ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 1.96kB, 17ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 17ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 26ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 28ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 24ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 20ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 26ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 21ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 22ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 27ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 21ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 31ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 15ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 24ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 17ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.39kB, 18ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until needs_review
+
+↳ Poll until needs_review
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 3.02kB, 21ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Poll until needs_review: status=needs_review attempts
+  │ =3 polls=24'
+  └
+  ✓  reaches needs_review (status=needs_review, attempts=3)
+  ✓  stopped after exactly 3 attempts
+  ✓  staff see the technical reason
+
+↳ Requester sees a safe message only
+  GET https://localhost:8443/api/v1/requests/16 [200 OK, 2.46kB, 14ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 needs_review
+  ✓  no technical reason shown to the requester
+
+↳ Item is in the review queue
+  GET https://localhost:8443/api/v1/review-queue [200 OK, 1.14kB, 11ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 and contains the failed item
+
+┌─────────────────────────┬──────────────────┬─────────────────┐
+│                         │         executed │          failed │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│              iterations │                1 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│                requests │               28 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│            test-scripts │               56 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│      prerequest-scripts │               25 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│              assertions │               36 │               0 │
+├─────────────────────────┴──────────────────┴─────────────────┤
+│ total run duration: 47.1s                                    │
+├──────────────────────────────────────────────────────────────┤
+│ total data received: 47.59kB (approx)                        │
+├──────────────────────────────────────────────────────────────┤
+│ average response time: 21ms [min: 9ms, max: 34ms, s.d.: 5ms] │
+└──────────────────────────────────────────────────────────────┘
+newman exit code: 0

@@ -49,9 +49,24 @@ class ApiClient {
 
   // ------------------------------------------------------------ requests
 
+  /// Week 15 (W5): the list is paginated on the server. Follow every page (up to [maxPages] x 100
+  /// items) so no request is silently left out of a staff queue.
+  static const maxPages = 20;
+
   Future<List<CertRequest>> listRequests({String? status}) async {
-    final json = await _send('GET', '/requests', query: {if (status != null) 'status': status});
-    return _list(json, CertRequest.fromJson);
+    final items = <CertRequest>[];
+    var page = 1;
+    while (true) {
+      final json = await _send('GET', '/requests', query: {
+        if (status != null) 'status': status,
+        'per_page': '100',
+        'page': '$page',
+      });
+      items.addAll(_list(json, CertRequest.fromJson));
+      final lastPage = ((json['meta'] as Map?)?['last_page'] as num?)?.toInt() ?? page;
+      if (page >= lastPage || page >= maxPages) return items;
+      page++;
+    }
   }
 
   Future<CertRequest> getRequest(int id) async => _item(await _send('GET', '/requests/$id'), CertRequest.fromJson);

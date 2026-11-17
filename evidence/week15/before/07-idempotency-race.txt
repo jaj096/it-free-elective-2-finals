@@ -1,0 +1,13 @@
+# Each round: 12 identical POST /requests sent at the same moment with ONE Idempotency-Key.
+# Expected: exactly one 201 and eleven 200 (same request returned); never 500.
+round 1: 11x200 1x201 
+round 2: 11x200 1x201 
+round 3: 11x200 1x201 
+round 4: 11x200 1x201 
+round 5: 11x200 1x201 
+# rows created per key:
+race-before-1-1794929708 -> 1 row(s)
+race-before-2-1794929708 -> 1 row(s)
+race-before-3-1794929708 -> 1 row(s)
+race-before-4-1794929708 -> 1 row(s)
+race-before-5-1794929708 -> 1 row(s)

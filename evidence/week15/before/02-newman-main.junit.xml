@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Certificate Generation Queue – Week 15 integration tests" tests="54" time="1.922">
+  <testsuite name="00 Setup / Health" id="0250fbd6-cca3-4d8a-b164-9e44069e13dd" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.043">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.043" classname="00SetupHealth"/>
+    <testcase name="200, database ok" time="0.043" classname="00SetupHealth"/>
+    <testcase name="generator reachable" time="0.043" classname="00SetupHealth"/>
+  </testsuite>
+  <testsuite name="00 Setup / Login approver" id="ab5045cb-ef58-4b73-9893-029015a843ff" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="0" errors="0" time="0.231">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.231" classname="00SetupLoginApprover"/>
+    <testcase name="200 and a token" time="0.231" classname="00SetupLoginApprover"/>
+  </testsuite>
+  <testsuite name="00 Setup / Login custodian" id="93e57bd7-e463-4d1b-86cf-44c068ccd5e2" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="0" errors="0" time="0.230">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.230" classname="00SetupLoginCustodian"/>
+    <testcase name="200 and a token" time="0.230" classname="00SetupLoginCustodian"/>
+  </testsuite>
+  <testsuite name="00 Setup / Login juan" id="bf10f990-438c-4115-b800-4a6c56a2d1c3" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="0" errors="0" time="0.230">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.230" classname="00SetupLoginJuan"/>
+    <testcase name="200 and a token" time="0.230" classname="00SetupLoginJuan"/>
+  </testsuite>
+  <testsuite name="00 Setup / Login maria" id="c2a710d5-82f9-4c2a-82ee-cd6d78ac2be8" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="0" errors="0" time="0.228">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.228" classname="00SetupLoginMaria"/>
+    <testcase name="200 and a token" time="0.228" classname="00SetupLoginMaria"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Requester submits (with Idempotency-Key)" id="fafa0291-1eb4-48ae-b059-2bbda92a0fba" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="0" errors="0" time="0.012">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.012" classname="01NormalPathRequesterSubmitsWithIdempotencyKey"/>
+    <testcase name="201 created as submitted" time="0.012" classname="01NormalPathRequesterSubmitsWithIdempotencyKey"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Save the key used" id="51797279-9dde-4aee-a3ae-8809cfbf08e2" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="01NormalPathSaveTheKeyUsed"/>
+    <testcase name="200 me" time="0.007" classname="01NormalPathSaveTheKeyUsed"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Approver approves" id="40599618-6710-449e-be01-884ea60632d3" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="0" errors="0" time="0.036">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.036" classname="01NormalPathApproverApproves"/>
+    <testcase name="202 accepted and queued" time="0.036" classname="01NormalPathApproverApproves"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Poll until generated" id="4eae20b2-9071-4fbd-89e9-7f868d72edf1" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.018">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.026" classname="01NormalPathPollUntilGenerated"/>
+    <testcase name="reaches generated (status=generated, attempts=1)" time="0.026" classname="01NormalPathPollUntilGenerated"/>
+    <testcase name="generated on attempt 1" time="0.026" classname="01NormalPathPollUntilGenerated"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Custodian verifies" id="299cf680-9d77-4697-bccb-2f96b0811655" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="0" errors="0" time="0.024">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.024" classname="01NormalPathCustodianVerifies"/>
+    <testcase name="200 verified" time="0.024" classname="01NormalPathCustodianVerifies"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Custodian releases" id="df7bff66-6eea-4bed-b6b4-0b09105fa6ea" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="0" errors="0" time="0.014">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.014" classname="01NormalPathCustodianReleases"/>
+    <testcase name="200 released" time="0.014" classname="01NormalPathCustodianReleases"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Requester downloads PDF" id="303fcdee-a383-4464-9986-8f46e5a2dd30" timestamp="2026-11-17T15:30:08.115Z" tests="4" failures="1" errors="0" time="0.011">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.011" classname="01NormalPathRequesterDownloadsPdf"/>
+    <testcase name="200 application/pdf" time="0.011" classname="01NormalPathRequesterDownloadsPdf"/>
+    <testcase name="X-Content-SHA256 matches the hash recorded at generation" time="0.011" classname="01NormalPathRequesterDownloadsPdf"/>
+    <testcase name="[H] PDF is not cached (Cache-Control: no-store)" time="0.011" classname="01NormalPathRequesterDownloadsPdf">
+      <failure type="AssertionFailure" message="expected 'no-cache, private' to include 'no-store'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 01 Normal path / Requester downloads PDF.]]>
+        <![CDATA[Test description: [H] PDF is not cached (Cache-Control: no-store).]]>
+        <![CDATA[Error message: expected 'no-cache, private' to include 'no-store'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 'no-cache, private' to include 'no-store'
+   at Object.eval sandbox-script.js:3:12).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="01 Normal path / Requester acknowledges" id="6bdb87dd-2de5-480e-afa8-39773f38dc7e" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="0" errors="0" time="0.011">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.011" classname="01NormalPathRequesterAcknowledges"/>
+    <testcase name="200 acknowledged" time="0.011" classname="01NormalPathRequesterAcknowledges"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Requester lists own requests" id="283b8850-5fd9-496b-a181-11d5366f9860" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.010">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.010" classname="01NormalPathRequesterListsOwnRequests"/>
+    <testcase name="200 and includes the new request" time="0.010" classname="01NormalPathRequesterListsOwnRequests"/>
+    <testcase name="only own requests (no requester block for requesters)" time="0.010" classname="01NormalPathRequesterListsOwnRequests"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Missing certificate_type" id="5ae39e47-8f04-4643-89c8-e3e98a64123a" timestamp="2026-11-17T15:30:08.115Z" tests="4" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="02InvalidAndBoundaryInputMissingCertificateType"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.009" classname="02InvalidAndBoundaryInputMissingCertificateType"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.009" classname="02InvalidAndBoundaryInputMissingCertificateType"/>
+    <testcase name="names the field" time="0.009" classname="02InvalidAndBoundaryInputMissingCertificateType"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Unknown certificate_type" id="638d97a5-8b9f-4f44-8a24-600e39ca2f9b" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.010">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.010" classname="02InvalidAndBoundaryInputUnknownCertificateType"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.010" classname="02InvalidAndBoundaryInputUnknownCertificateType"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.010" classname="02InvalidAndBoundaryInputUnknownCertificateType"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Purpose 4 characters (below minimum)" id="46a903b3-f548-4484-9054-dbb37fdebf50" timestamp="2026-11-17T15:30:08.115Z" tests="4" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="02InvalidAndBoundaryInputPurpose4CharactersBelowMinimum"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.009" classname="02InvalidAndBoundaryInputPurpose4CharactersBelowMinimum"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.009" classname="02InvalidAndBoundaryInputPurpose4CharactersBelowMinimum"/>
+    <testcase name="names purpose" time="0.009" classname="02InvalidAndBoundaryInputPurpose4CharactersBelowMinimum"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Purpose exactly 5 characters (boundary, accepted)" id="c931d6de-d69d-46ac-aba9-7ede2bc44130" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="02InvalidAndBoundaryInputPurposeExactly5CharactersBoundaryAccepted"/>
+    <testcase name="201 created" time="0.009" classname="02InvalidAndBoundaryInputPurposeExactly5CharactersBoundaryAccepted"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Purpose exactly 255 characters (boundary, accepted)" id="66cb5d97-ab24-458d-ad79-98a9447580f8" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="02InvalidAndBoundaryInputPurposeExactly255CharactersBoundaryAccepted"/>
+    <testcase name="201 created" time="0.009" classname="02InvalidAndBoundaryInputPurposeExactly255CharactersBoundaryAccepted"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Purpose 256 characters (above maximum)" id="1b03775f-cbee-447f-89e2-58e4bd54260c" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="02InvalidAndBoundaryInputPurpose256CharactersAboveMaximum"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.009" classname="02InvalidAndBoundaryInputPurpose256CharactersAboveMaximum"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.009" classname="02InvalidAndBoundaryInputPurpose256CharactersAboveMaximum"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Malformed JSON body" id="6182decb-83f1-439c-928b-0dcab27f1471" timestamp="2026-11-17T15:30:08.115Z" tests="4" failures="2" errors="0" time="0.010">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.010" classname="02InvalidAndBoundaryInputMalformedJsonBody"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.010" classname="02InvalidAndBoundaryInputMalformedJsonBody"/>
+    <testcase name="400 MALFORMED_JSON" time="0.010" classname="02InvalidAndBoundaryInputMalformedJsonBody">
+      <failure type="AssertionFailure" message="expected response to have status code 400 but got 422">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 02 Invalid and boundary input / Malformed JSON body.]]>
+        <![CDATA[Test description: 400 MALFORMED_JSON.]]>
+        <![CDATA[Error message: expected response to have status code 400 but got 422.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 400 but got 422
+   at Object.eval sandbox-script.js:1:21).]]>
+      </failure>
+    </testcase>
+    <testcase name="does not pretend fields are missing" time="0.010" classname="02InvalidAndBoundaryInputMalformedJsonBody">
+      <failure type="AssertionFailure" message="expected { …(2) } to be undefined">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 02 Invalid and boundary input / Malformed JSON body.]]>
+        <![CDATA[Test description: does not pretend fields are missing.]]>
+        <![CDATA[Error message: expected { …(2) } to be undefined.]]>
+        <![CDATA[Stacktrace: AssertionError: expected { …(2) } to be undefined
+   at Object.eval sandbox-script.js:2:21).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Invalid Idempotency-Key format" id="2d2a387e-5d3b-4eae-95eb-035a961ba41c" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.011">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.011" classname="02InvalidAndBoundaryInputInvalidIdempotencyKeyFormat"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.011" classname="02InvalidAndBoundaryInputInvalidIdempotencyKeyFormat"/>
+    <testcase name="400 BAD_REQUEST" time="0.011" classname="02InvalidAndBoundaryInputInvalidIdempotencyKeyFormat"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Unknown status filter" id="064b0919-4c84-4267-ba8a-9d7cfca10750" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="02InvalidAndBoundaryInputUnknownStatusFilter"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.009" classname="02InvalidAndBoundaryInputUnknownStatusFilter"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.009" classname="02InvalidAndBoundaryInputUnknownStatusFilter"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Reject without a reason" id="b918614f-5576-4684-a422-bfe9841f82a6" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="02InvalidAndBoundaryInputRejectWithoutAReason"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="02InvalidAndBoundaryInputRejectWithoutAReason"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.008" classname="02InvalidAndBoundaryInputRejectWithoutAReason"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Verify with the wrong certificate number" id="f99decf5-0f75-4314-b42f-a22e14f69601" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="02InvalidAndBoundaryInputVerifyWithTheWrongCertificateNumber"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.009" classname="02InvalidAndBoundaryInputVerifyWithTheWrongCertificateNumber"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.009" classname="02InvalidAndBoundaryInputVerifyWithTheWrongCertificateNumber"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / No token" id="20726af6-b45d-4141-ac1a-02cd749ebbfb" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.005">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.005" classname="03Unauthenticated401NoToken"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.005" classname="03Unauthenticated401NoToken"/>
+    <testcase name="401 UNAUTHENTICATED" time="0.005" classname="03Unauthenticated401NoToken"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / Made-up token" id="0247a5b0-0a91-4683-b2d1-23f1283c0282" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.006" classname="03Unauthenticated401MadeUpToken"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.006" classname="03Unauthenticated401MadeUpToken"/>
+    <testcase name="401 UNAUTHENTICATED" time="0.006" classname="03Unauthenticated401MadeUpToken"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / Wrong password for a real account #1" id="41c88bf8-0ceb-42cb-9185-dad62cc862e7" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.229">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.229" classname="03Unauthenticated401WrongPasswordForARealAccount1"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.229" classname="03Unauthenticated401WrongPasswordForARealAccount1"/>
+    <testcase name="401 INVALID_CREDENTIALS" time="0.229" classname="03Unauthenticated401WrongPasswordForARealAccount1"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / Unknown email #1" id="995d058d-bcf1-4940-9123-40b6f487cb09" timestamp="2026-11-17T15:30:08.115Z" tests="4" failures="0" errors="0" time="0.010">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.010" classname="03Unauthenticated401UnknownEmail1"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.010" classname="03Unauthenticated401UnknownEmail1"/>
+    <testcase name="401 INVALID_CREDENTIALS" time="0.010" classname="03Unauthenticated401UnknownEmail1"/>
+    <testcase name="same message as a wrong password" time="0.010" classname="03Unauthenticated401UnknownEmail1"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / Wrong password for a real account #2" id="cedf31ee-295a-42d8-934a-8eb9cc9a9303" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.225">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.225" classname="03Unauthenticated401WrongPasswordForARealAccount2"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.225" classname="03Unauthenticated401WrongPasswordForARealAccount2"/>
+    <testcase name="401 INVALID_CREDENTIALS" time="0.225" classname="03Unauthenticated401WrongPasswordForARealAccount2"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / Unknown email #2" id="1797c8c7-5957-414a-a812-215078357fcb" timestamp="2026-11-17T15:30:08.115Z" tests="4" failures="0" errors="0" time="0.010">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.010" classname="03Unauthenticated401UnknownEmail2"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.010" classname="03Unauthenticated401UnknownEmail2"/>
+    <testcase name="401 INVALID_CREDENTIALS" time="0.010" classname="03Unauthenticated401UnknownEmail2"/>
+    <testcase name="same message as a wrong password" time="0.010" classname="03Unauthenticated401UnknownEmail2"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / [H] Timing: unknown email is not noticeably faster" id="38f750a8-b5e0-4857-b7c4-68d2829056c0" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="1" errors="0" time="0.017">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.017" classname="03Unauthenticated401HTimingUnknownEmailIsNotNoticeablyFaster"/>
+    <testcase name="[H] unknown-email login takes at least 50% of a wrong-password login (10 ms vs 227 ms)" time="0.017" classname="03Unauthenticated401HTimingUnknownEmailIsNotNoticeablyFaster">
+      <failure type="AssertionFailure" message="expected 10 to be at least 113.5">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 03 Unauthenticated (401) / [H] Timing: unknown email is not noticeably faster.]]>
+        <![CDATA[Test description: [H] unknown-email login takes at least 50% of a wrong-password login (10 ms vs 227 ms).]]>
+        <![CDATA[Error message: expected 10 to be at least 113.5.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 10 to be at least 113.5
+   at Object.eval sandbox-script.js:1:32).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="04 Forbidden (403) / Requester tries to approve" id="eea007c0-db28-407f-a585-cc0b714758cc" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="04Forbidden403RequesterTriesToApprove"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.009" classname="04Forbidden403RequesterTriesToApprove"/>
+    <testcase name="403 FORBIDDEN" time="0.009" classname="04Forbidden403RequesterTriesToApprove"/>
+  </testsuite>
+  <testsuite name="04 Forbidden (403) / Requester opens the review queue" id="bf2872cf-b598-4411-b216-dd242b622cb5" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="04Forbidden403RequesterOpensTheReviewQueue"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="04Forbidden403RequesterOpensTheReviewQueue"/>
+    <testcase name="403 FORBIDDEN" time="0.008" classname="04Forbidden403RequesterOpensTheReviewQueue"/>
+  </testsuite>
+  <testsuite name="04 Forbidden (403) / Requester opens automation metrics" id="0be0d1d4-6270-4083-a140-64c1b0ee11b1" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="04Forbidden403RequesterOpensAutomationMetrics"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="04Forbidden403RequesterOpensAutomationMetrics"/>
+    <testcase name="403 FORBIDDEN" time="0.007" classname="04Forbidden403RequesterOpensAutomationMetrics"/>
+  </testsuite>
+  <testsuite name="04 Forbidden (403) / Approver tries to release" id="6d897955-eab3-45a1-a92f-978d26c46bcc" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="04Forbidden403ApproverTriesToRelease"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.009" classname="04Forbidden403ApproverTriesToRelease"/>
+    <testcase name="403 FORBIDDEN" time="0.009" classname="04Forbidden403ApproverTriesToRelease"/>
+  </testsuite>
+  <testsuite name="04 Forbidden (403) / Custodian tries to submit a request" id="6c5f950d-b1dc-4d9a-9b2d-120f10891389" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="04Forbidden403CustodianTriesToSubmitARequest"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="04Forbidden403CustodianTriesToSubmitARequest"/>
+    <testcase name="403 FORBIDDEN" time="0.008" classname="04Forbidden403CustodianTriesToSubmitARequest"/>
+  </testsuite>
+  <testsuite name="04 Forbidden (403) / Approver tries to acknowledge" id="77d5f0c3-fe47-4eb7-bac6-d50f8fccbc6f" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.014">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.014" classname="04Forbidden403ApproverTriesToAcknowledge"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.014" classname="04Forbidden403ApproverTriesToAcknowledge"/>
+    <testcase name="403 FORBIDDEN" time="0.014" classname="04Forbidden403ApproverTriesToAcknowledge"/>
+  </testsuite>
+  <testsuite name="05 Not found (404/405) / Request that does not exist" id="f5f30c51-604a-4a68-9f37-f049c4519b3e" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="05NotFound404405RequestThatDoesNotExist"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.009" classname="05NotFound404405RequestThatDoesNotExist"/>
+    <testcase name="404 NOT_FOUND" time="0.009" classname="05NotFound404405RequestThatDoesNotExist"/>
+  </testsuite>
+  <testsuite name="05 Not found (404/405) / Another requester's request" id="b2827998-8b70-4c9d-b212-9271119f5192" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.012">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.012" classname="05NotFound404405AnotherRequestersRequest"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.012" classname="05NotFound404405AnotherRequestersRequest"/>
+    <testcase name="404 NOT_FOUND" time="0.012" classname="05NotFound404405AnotherRequestersRequest"/>
+  </testsuite>
+  <testsuite name="05 Not found (404/405) / Download another requester's certificate" id="bcbf04db-35fc-4ea9-962e-ccc850064d91" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="05NotFound404405DownloadAnotherRequestersCertificate"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.009" classname="05NotFound404405DownloadAnotherRequestersCertificate"/>
+    <testcase name="404 NOT_FOUND" time="0.009" classname="05NotFound404405DownloadAnotherRequestersCertificate"/>
+  </testsuite>
+  <testsuite name="05 Not found (404/405) / Acknowledge another requester's certificate" id="aaabf887-53d0-4f1a-a5b6-fc9f18f5b51d" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.010">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.010" classname="05NotFound404405AcknowledgeAnotherRequestersCertificate"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.010" classname="05NotFound404405AcknowledgeAnotherRequestersCertificate"/>
+    <testcase name="404 NOT_FOUND" time="0.010" classname="05NotFound404405AcknowledgeAnotherRequestersCertificate"/>
+  </testsuite>
+  <testsuite name="05 Not found (404/405) / Unknown route" id="4994b78e-fc03-4eca-a9fc-6d05798c75df" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="05NotFound404405UnknownRoute"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="05NotFound404405UnknownRoute"/>
+    <testcase name="404 NOT_FOUND" time="0.007" classname="05NotFound404405UnknownRoute"/>
+  </testsuite>
+  <testsuite name="05 Not found (404/405) / Wrong HTTP method" id="c1323ca4-afeb-4c2b-b6ff-f3309d2f5365" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="05NotFound404405WrongHttpMethod"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="05NotFound404405WrongHttpMethod"/>
+    <testcase name="405 METHOD_NOT_ALLOWED" time="0.007" classname="05NotFound404405WrongHttpMethod"/>
+  </testsuite>
+  <testsuite name="06 Duplicate and conflict (409) / Same Idempotency-Key, same body (retry)" id="d9ad2ff7-d38c-421f-a730-fe4d18905be5" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="06DuplicateAndConflict409SameIdempotencyKeySameBodyRetry"/>
+    <testcase name="200 returns the ORIGINAL request" time="0.009" classname="06DuplicateAndConflict409SameIdempotencyKeySameBodyRetry"/>
+  </testsuite>
+  <testsuite name="06 Duplicate and conflict (409) / Same Idempotency-Key, different body" id="cfd50953-176e-4bd0-9e10-e3b419acb649" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="06DuplicateAndConflict409SameIdempotencyKeyDifferentBody"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="06DuplicateAndConflict409SameIdempotencyKeyDifferentBody"/>
+    <testcase name="409 DUPLICATE_REQUEST" time="0.008" classname="06DuplicateAndConflict409SameIdempotencyKeyDifferentBody"/>
+  </testsuite>
+  <testsuite name="06 Duplicate and conflict (409) / Approve an already-processed request" id="67da184d-196e-41c2-ace5-afbe3e20b8d6" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.011">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.011" classname="06DuplicateAndConflict409ApproveAnAlreadyProcessedRequest"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.011" classname="06DuplicateAndConflict409ApproveAnAlreadyProcessedRequest"/>
+    <testcase name="409 INVALID_STATE" time="0.011" classname="06DuplicateAndConflict409ApproveAnAlreadyProcessedRequest"/>
+  </testsuite>
+  <testsuite name="06 Duplicate and conflict (409) / Release twice" id="ebe69cc2-5ce0-4e68-aaa9-99475ab73caf" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="06DuplicateAndConflict409ReleaseTwice"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="06DuplicateAndConflict409ReleaseTwice"/>
+    <testcase name="409 INVALID_STATE" time="0.008" classname="06DuplicateAndConflict409ReleaseTwice"/>
+  </testsuite>
+  <testsuite name="06 Duplicate and conflict (409) / Requeue an item that is not in review" id="c5a89d7e-20c5-429d-97c2-4fc4af4a8b95" timestamp="2026-11-17T15:30:08.115Z" tests="3" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="06DuplicateAndConflict409RequeueAnItemThatIsNotInReview"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.009" classname="06DuplicateAndConflict409RequeueAnItemThatIsNotInReview"/>
+    <testcase name="409 INVALID_STATE" time="0.009" classname="06DuplicateAndConflict409RequeueAnItemThatIsNotInReview"/>
+  </testsuite>
+  <testsuite name="07 Hardening checks / [H] Security headers on an authenticated response" id="c992f60f-1e1b-42e1-9313-eaabbcd0f617" timestamp="2026-11-17T15:30:08.115Z" tests="8" failures="5" errors="0" time="0.010">
+    <testcase name="200" time="0.010" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse"/>
+    <testcase name="[global] response has an X-Correlation-ID" time="0.010" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse"/>
+    <testcase name="[H] Cache-Control: no-store" time="0.010" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse">
+      <failure type="AssertionFailure" message="expected 'no-cache, private' to include 'no-store'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 07 Hardening checks / [H] Security headers on an authenticated response.]]>
+        <![CDATA[Test description: [H] Cache-Control: no-store.]]>
+        <![CDATA[Error message: expected 'no-cache, private' to include 'no-store'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 'no-cache, private' to include 'no-store'
+   at Object.eval sandbox-script.js:2:50).]]>
+      </failure>
+    </testcase>
+    <testcase name="[H] X-Frame-Options: DENY" time="0.010" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse">
+      <failure type="AssertionFailure" message="expected '' to deeply equal 'DENY'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 07 Hardening checks / [H] Security headers on an authenticated response.]]>
+        <![CDATA[Test description: [H] X-Frame-Options: DENY.]]>
+        <![CDATA[Error message: expected '' to deeply equal 'DENY'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected '' to deeply equal 'DENY'
+   at Object.eval sandbox-script.js:3:50).]]>
+      </failure>
+    </testcase>
+    <testcase name="[H] Content-Security-Policy: default-src 'none'" time="0.010" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse">
+      <failure type="AssertionFailure" message="expected '' to include 'default-src \'none\''">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 07 Hardening checks / [H] Security headers on an authenticated response.]]>
+        <![CDATA[Test description: [H] Content-Security-Policy: default-src 'none'.]]>
+        <![CDATA[Error message: expected '' to include 'default-src \'none\''.]]>
+        <![CDATA[Stacktrace: AssertionError: expected '' to include 'default-src \'none\''
+   at Object.eval sandbox-script.js:4:50).]]>
+      </failure>
+    </testcase>
+    <testcase name="[H] Referrer-Policy: no-referrer" time="0.010" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse">
+      <failure type="AssertionFailure" message="expected '' to deeply equal 'no-referrer'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 07 Hardening checks / [H] Security headers on an authenticated response.]]>
+        <![CDATA[Test description: [H] Referrer-Policy: no-referrer.]]>
+        <![CDATA[Error message: expected '' to deeply equal 'no-referrer'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected '' to deeply equal 'no-referrer'
+   at Object.eval sandbox-script.js:5:50).]]>
+      </failure>
+    </testcase>
+    <testcase name="X-Content-Type-Options: nosniff" time="0.010" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse"/>
+    <testcase name="[H] no X-Powered-By (PHP version not disclosed)" time="0.010" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse">
+      <failure type="AssertionFailure" message="expected true to be false">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 07 Hardening checks / [H] Security headers on an authenticated response.]]>
+        <![CDATA[Test description: [H] no X-Powered-By (PHP version not disclosed).]]>
+        <![CDATA[Error message: expected true to be false.]]>
+        <![CDATA[Stacktrace: AssertionError: expected true to be false
+   at Object.eval sandbox-script.js:7:50).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="07 Hardening checks / [H] Security headers on an error response" id="fb0ce607-7d9f-443f-b859-2fce94459276" timestamp="2026-11-17T15:30:08.115Z" tests="5" failures="2" errors="0" time="0.008">
+    <testcase name="404" time="0.008" classname="07HardeningChecksHSecurityHeadersOnAnErrorResponse"/>
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="07HardeningChecksHSecurityHeadersOnAnErrorResponse"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="07HardeningChecksHSecurityHeadersOnAnErrorResponse"/>
+    <testcase name="[H] Cache-Control: no-store" time="0.008" classname="07HardeningChecksHSecurityHeadersOnAnErrorResponse">
+      <failure type="AssertionFailure" message="expected 'no-cache, private' to include 'no-store'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 07 Hardening checks / [H] Security headers on an error response.]]>
+        <![CDATA[Test description: [H] Cache-Control: no-store.]]>
+        <![CDATA[Error message: expected 'no-cache, private' to include 'no-store'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 'no-cache, private' to include 'no-store'
+   at Object.eval sandbox-script.js:2:51).]]>
+      </failure>
+    </testcase>
+    <testcase name="[H] no X-Powered-By" time="0.008" classname="07HardeningChecksHSecurityHeadersOnAnErrorResponse">
+      <failure type="AssertionFailure" message="expected true to be false">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 07 Hardening checks / [H] Security headers on an error response.]]>
+        <![CDATA[Test description: [H] no X-Powered-By.]]>
+        <![CDATA[Error message: expected true to be false.]]>
+        <![CDATA[Stacktrace: AssertionError: expected true to be false
+   at Object.eval sandbox-script.js:3:51).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="07 Hardening checks / [H] Request list is paginated (no silent cut-off)" id="39cbd2ac-775f-4d09-89f4-56edb60ac487" timestamp="2026-11-17T15:30:08.115Z" tests="4" failures="2" errors="0" time="0.012">
+    <testcase name="200" time="0.012" classname="07HardeningChecksHRequestListIsPaginatedNoSilentCutOff"/>
+    <testcase name="[global] response has an X-Correlation-ID" time="0.012" classname="07HardeningChecksHRequestListIsPaginatedNoSilentCutOff"/>
+    <testcase name="[H] at most 2 items on the page" time="0.012" classname="07HardeningChecksHRequestListIsPaginatedNoSilentCutOff">
+      <failure type="AssertionFailure" message="expected 15 to be at most 2">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 07 Hardening checks / [H] Request list is paginated (no silent cut-off).]]>
+        <![CDATA[Test description: [H] at most 2 items on the page.]]>
+        <![CDATA[Error message: expected 15 to be at most 2.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 15 to be at most 2
+   at Object.eval sandbox-script.js:2:52).]]>
+      </failure>
+    </testcase>
+    <testcase name="[H] meta.total and meta.last_page tell the client how much exists" time="0.012" classname="07HardeningChecksHRequestListIsPaginatedNoSilentCutOff">
+      <failure type="AssertionFailure" message="expected undefined to be an object">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 07 Hardening checks / [H] Request list is paginated (no silent cut-off).]]>
+        <![CDATA[Test description: [H] meta.total and meta.last_page tell the client how much exists.]]>
+        <![CDATA[Error message: expected undefined to be an object.]]>
+        <![CDATA[Stacktrace: AssertionError: expected undefined to be an object
+   at Object.eval sandbox-script.js:3:52).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="07 Hardening checks / [H] Oversized page size is refused" id="59c90fca-d98d-460b-bef8-6faa5cb0f431" timestamp="2026-11-17T15:30:08.115Z" tests="2" failures="1" errors="0" time="0.010">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.010" classname="07HardeningChecksHOversizedPageSizeIsRefused"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.010" classname="07HardeningChecksHOversizedPageSizeIsRefused">
+      <failure type="AssertionFailure" message="expected response to have status code 422 but got 200">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: e9f9ab12-278e-46a6-9ec5-54e06e400c0a.]]>
+        <![CDATA[Collection name: Certificate Generation Queue – Week 15 integration tests.]]>
+        <![CDATA[Request name: 07 Hardening checks / [H] Oversized page size is refused.]]>
+        <![CDATA[Test description: 422 VALIDATION_FAILED.]]>
+        <![CDATA[Error message: expected response to have status code 422 but got 200.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 422 but got 200
+   at Object.eval sandbox-script.js:1:53).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+</testsuites>

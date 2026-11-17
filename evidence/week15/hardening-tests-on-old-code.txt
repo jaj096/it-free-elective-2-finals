@@ -1,0 +1,12 @@
+# tests/Feature/HardeningTest.php run against the code BEFORE the fixes
+# (git stash of app/Http/Controllers + bootstrap/app.php at commit 254290a, 2026-11-17 23:40 +0800)
+# Expected: every W2-W6 test fails; the 4 regression guards pass.
+result: tests=12 passed=4 failed=7 errors=1
+FAILURE test_w3_malformed_json_gets_400_not_a_misleading_422 :: Expected response status code [400] but received 422.
+FAILURE test_w4_hardening_headers_on_success_error_and_unknown_routes :: Failed asserting that 'no-cache, private' [ASCII](length: 17) contains "no-store" [ASCII](length: 8).
+FAILURE test_w5_request_list_is_paginated_with_totals :: Failed asserting that actual size 5 matches expected size 1.
+FAILURE test_w5_more_than_200_requests_are_all_reachable :: Failed asserting that null is identical to 230.
+FAILURE test_w5_page_size_is_bounded :: Expected response status code [422] but received 200.
+FAILURE test_w6_losing_a_duplicate_submit_race_returns_the_original_not_500 :: Expected response status code [200] but received 500.
+FAILURE test_w6_losing_the_race_with_different_data_returns_409 :: Expected response status code [409] but received 500.
+ERROR test_w2_unknown_email_still_runs_a_password_hash_check :: Method check() should be called at least 1 times but called 0 times (unknown email skipped bcrypt).
