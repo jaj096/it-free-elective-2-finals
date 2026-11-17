@@ -103,11 +103,12 @@ done
 
 echo "== 15.7 Duplicate-submit race: 5 rounds x 12 parallel POSTs with the same Idempotency-Key"
 TOKEN=$(env_value token_maria)
+RUN_ID="$LABEL-$(date +%Y%m%d%H%M%S)"   # unique per run, so the row count below only sees this run's keys
 {
   echo "# Each round: 12 identical POST /requests sent at the same moment with ONE Idempotency-Key."
   echo "# Expected: exactly one 201 and eleven 200 (same request returned); never 500."
   for round in 1 2 3 4 5; do
-    key="race-$LABEL-$round-$(date +%s)"
+    key="race-$RUN_ID-$round"
     codes=$(for i in $(seq 12); do
       curl -s -o /dev/null -w "%{http_code}\n" -X POST "$API/requests" -H "Authorization: Bearer $TOKEN" \
         -H 'Accept: application/json' -H 'Content-Type: application/json' -H "Idempotency-Key: $key" \
@@ -117,7 +118,7 @@ TOKEN=$(env_value token_maria)
   done
   echo "# rows created per key:"
   php -r '$d=new PDO("sqlite:".$argv[1]); foreach($d->query("select idempotency_key k, count(*) c from certificate_requests where idempotency_key like \"race-".$argv[2]."-%\" group by idempotency_key") as $r) echo $r["k"]," -> ",$r["c"]," row(s)\n";' \
-    "$ROOT/backend/database/database.sqlite" "$LABEL"
+    "$ROOT/backend/database/database.sqlite" "$RUN_ID"
 } > "$OUT/07-idempotency-race.txt" 2>&1
 sed 's/^/   /' "$OUT/07-idempotency-race.txt" | grep -E "round|row"
 
