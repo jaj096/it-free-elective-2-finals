@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Certificate Generation Queue – Week 15 integration tests" tests="54" time="2.254">
+  <testsuite name="00 Setup / Health" id="a197dfab-e55b-45ce-a3fc-c5b268b0a1e2" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.030">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.030" classname="00SetupHealth"/>
+    <testcase name="200, database ok" time="0.030" classname="00SetupHealth"/>
+    <testcase name="generator reachable" time="0.030" classname="00SetupHealth"/>
+  </testsuite>
+  <testsuite name="00 Setup / Login approver" id="d2a78f45-1640-4cfe-9ecf-d7ba8b407811" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.230">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.230" classname="00SetupLoginApprover"/>
+    <testcase name="200 and a token" time="0.230" classname="00SetupLoginApprover"/>
+  </testsuite>
+  <testsuite name="00 Setup / Login custodian" id="2a4f4ce4-8cda-493a-a180-79d42669697e" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.227">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.227" classname="00SetupLoginCustodian"/>
+    <testcase name="200 and a token" time="0.227" classname="00SetupLoginCustodian"/>
+  </testsuite>
+  <testsuite name="00 Setup / Login juan" id="a023766a-445e-43a9-8b2f-c03f247c5508" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.227">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.227" classname="00SetupLoginJuan"/>
+    <testcase name="200 and a token" time="0.227" classname="00SetupLoginJuan"/>
+  </testsuite>
+  <testsuite name="00 Setup / Login maria" id="be56250e-62d8-4e44-b642-8bcd8c439f0d" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.228">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.228" classname="00SetupLoginMaria"/>
+    <testcase name="200 and a token" time="0.228" classname="00SetupLoginMaria"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Requester submits (with Idempotency-Key)" id="91c4f7a9-5d06-4baa-b1f3-b2e47002a375" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.011">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.011" classname="01NormalPathRequesterSubmitsWithIdempotencyKey"/>
+    <testcase name="201 created as submitted" time="0.011" classname="01NormalPathRequesterSubmitsWithIdempotencyKey"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Save the key used" id="72b3359d-cdaa-4042-b161-a986fa8b1509" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="01NormalPathSaveTheKeyUsed"/>
+    <testcase name="200 me" time="0.007" classname="01NormalPathSaveTheKeyUsed"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Approver approves" id="f815caa8-e80a-4484-ad2a-9a50d8969d91" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.012">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.012" classname="01NormalPathApproverApproves"/>
+    <testcase name="202 accepted and queued" time="0.012" classname="01NormalPathApproverApproves"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Poll until generated" id="a1bd2b84-97f7-4dfe-a586-3f019e3024cb" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.020">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.030" classname="01NormalPathPollUntilGenerated"/>
+    <testcase name="reaches generated (status=generated, attempts=1)" time="0.030" classname="01NormalPathPollUntilGenerated"/>
+    <testcase name="generated on attempt 1" time="0.030" classname="01NormalPathPollUntilGenerated"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Custodian verifies" id="f68a975b-36e3-435d-b4c3-2d6c0ffc43a0" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.018">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.018" classname="01NormalPathCustodianVerifies"/>
+    <testcase name="200 verified" time="0.018" classname="01NormalPathCustodianVerifies"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Custodian releases" id="bffd030d-c3ec-422d-ac6f-ccdcb993c497" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.016">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.016" classname="01NormalPathCustodianReleases"/>
+    <testcase name="200 released" time="0.016" classname="01NormalPathCustodianReleases"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Requester downloads PDF" id="3b17c29f-8c22-464a-9154-14dbebee2ef6" timestamp="2026-11-17T15:46:56.348Z" tests="4" failures="0" errors="0" time="0.010">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.010" classname="01NormalPathRequesterDownloadsPdf"/>
+    <testcase name="200 application/pdf" time="0.010" classname="01NormalPathRequesterDownloadsPdf"/>
+    <testcase name="X-Content-SHA256 matches the hash recorded at generation" time="0.010" classname="01NormalPathRequesterDownloadsPdf"/>
+    <testcase name="[H] PDF is not cached (Cache-Control: no-store)" time="0.010" classname="01NormalPathRequesterDownloadsPdf"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Requester acknowledges" id="ceacc5cf-9437-44fa-be97-39bab62003dc" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.011">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.011" classname="01NormalPathRequesterAcknowledges"/>
+    <testcase name="200 acknowledged" time="0.011" classname="01NormalPathRequesterAcknowledges"/>
+  </testsuite>
+  <testsuite name="01 Normal path / Requester lists own requests" id="cd87a662-c15c-4930-8b83-c5cf4272f48d" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.010">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.010" classname="01NormalPathRequesterListsOwnRequests"/>
+    <testcase name="200 and includes the new request" time="0.010" classname="01NormalPathRequesterListsOwnRequests"/>
+    <testcase name="only own requests (no requester block for requesters)" time="0.010" classname="01NormalPathRequesterListsOwnRequests"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Missing certificate_type" id="2e5dd9ce-2960-44fe-b6d1-49badafd2706" timestamp="2026-11-17T15:46:56.348Z" tests="4" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="02InvalidAndBoundaryInputMissingCertificateType"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="02InvalidAndBoundaryInputMissingCertificateType"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.008" classname="02InvalidAndBoundaryInputMissingCertificateType"/>
+    <testcase name="names the field" time="0.008" classname="02InvalidAndBoundaryInputMissingCertificateType"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Unknown certificate_type" id="00733efe-9a15-4a34-a4f6-deeaabc03409" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="02InvalidAndBoundaryInputUnknownCertificateType"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="02InvalidAndBoundaryInputUnknownCertificateType"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.008" classname="02InvalidAndBoundaryInputUnknownCertificateType"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Purpose 4 characters (below minimum)" id="85b68828-c75f-442e-989c-252601566b34" timestamp="2026-11-17T15:46:56.348Z" tests="4" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="02InvalidAndBoundaryInputPurpose4CharactersBelowMinimum"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.009" classname="02InvalidAndBoundaryInputPurpose4CharactersBelowMinimum"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.009" classname="02InvalidAndBoundaryInputPurpose4CharactersBelowMinimum"/>
+    <testcase name="names purpose" time="0.009" classname="02InvalidAndBoundaryInputPurpose4CharactersBelowMinimum"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Purpose exactly 5 characters (boundary, accepted)" id="4d3c419c-5698-4a56-88c7-0d26055a2381" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.010">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.010" classname="02InvalidAndBoundaryInputPurposeExactly5CharactersBoundaryAccepted"/>
+    <testcase name="201 created" time="0.010" classname="02InvalidAndBoundaryInputPurposeExactly5CharactersBoundaryAccepted"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Purpose exactly 255 characters (boundary, accepted)" id="09133a14-4732-4311-9e5a-006bda552ea7" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="02InvalidAndBoundaryInputPurposeExactly255CharactersBoundaryAccepted"/>
+    <testcase name="201 created" time="0.009" classname="02InvalidAndBoundaryInputPurposeExactly255CharactersBoundaryAccepted"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Purpose 256 characters (above maximum)" id="fe149ad5-0073-46b3-a9ef-b7f72a117be3" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="02InvalidAndBoundaryInputPurpose256CharactersAboveMaximum"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="02InvalidAndBoundaryInputPurpose256CharactersAboveMaximum"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.007" classname="02InvalidAndBoundaryInputPurpose256CharactersAboveMaximum"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Malformed JSON body" id="08d1e58a-b6c1-4d7e-862d-acccce164f7e" timestamp="2026-11-17T15:46:56.348Z" tests="4" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="02InvalidAndBoundaryInputMalformedJsonBody"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="02InvalidAndBoundaryInputMalformedJsonBody"/>
+    <testcase name="400 MALFORMED_JSON" time="0.007" classname="02InvalidAndBoundaryInputMalformedJsonBody"/>
+    <testcase name="does not pretend fields are missing" time="0.007" classname="02InvalidAndBoundaryInputMalformedJsonBody"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Invalid Idempotency-Key format" id="69a4300b-742d-4379-b538-b6af2691c97d" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="02InvalidAndBoundaryInputInvalidIdempotencyKeyFormat"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.009" classname="02InvalidAndBoundaryInputInvalidIdempotencyKeyFormat"/>
+    <testcase name="400 BAD_REQUEST" time="0.009" classname="02InvalidAndBoundaryInputInvalidIdempotencyKeyFormat"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Unknown status filter" id="ea271ea7-c900-4b47-a164-3d9d656b50d2" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="02InvalidAndBoundaryInputUnknownStatusFilter"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="02InvalidAndBoundaryInputUnknownStatusFilter"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.007" classname="02InvalidAndBoundaryInputUnknownStatusFilter"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Reject without a reason" id="70e3faa1-546b-4149-9d0a-b82c0aad78c7" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="02InvalidAndBoundaryInputRejectWithoutAReason"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="02InvalidAndBoundaryInputRejectWithoutAReason"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.007" classname="02InvalidAndBoundaryInputRejectWithoutAReason"/>
+  </testsuite>
+  <testsuite name="02 Invalid and boundary input / Verify with the wrong certificate number" id="b2734af6-2d15-498e-8e99-9b1615df8fd7" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="02InvalidAndBoundaryInputVerifyWithTheWrongCertificateNumber"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="02InvalidAndBoundaryInputVerifyWithTheWrongCertificateNumber"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.008" classname="02InvalidAndBoundaryInputVerifyWithTheWrongCertificateNumber"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / No token" id="e36a67cd-3d5b-41b2-b461-af0065f96641" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.005">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.005" classname="03Unauthenticated401NoToken"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.005" classname="03Unauthenticated401NoToken"/>
+    <testcase name="401 UNAUTHENTICATED" time="0.005" classname="03Unauthenticated401NoToken"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / Made-up token" id="c8686652-bdbf-430d-87d1-eb6467beab49" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.006">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.006" classname="03Unauthenticated401MadeUpToken"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.006" classname="03Unauthenticated401MadeUpToken"/>
+    <testcase name="401 UNAUTHENTICATED" time="0.006" classname="03Unauthenticated401MadeUpToken"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / Wrong password for a real account #1" id="6477c543-d54e-4fe0-a6a8-31406a60c872" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.225">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.225" classname="03Unauthenticated401WrongPasswordForARealAccount1"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.225" classname="03Unauthenticated401WrongPasswordForARealAccount1"/>
+    <testcase name="401 INVALID_CREDENTIALS" time="0.225" classname="03Unauthenticated401WrongPasswordForARealAccount1"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / Unknown email #1" id="8f03950b-2229-4729-8604-406d28af6f5c" timestamp="2026-11-17T15:46:56.348Z" tests="4" failures="0" errors="0" time="0.226">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.226" classname="03Unauthenticated401UnknownEmail1"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.226" classname="03Unauthenticated401UnknownEmail1"/>
+    <testcase name="401 INVALID_CREDENTIALS" time="0.226" classname="03Unauthenticated401UnknownEmail1"/>
+    <testcase name="same message as a wrong password" time="0.226" classname="03Unauthenticated401UnknownEmail1"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / Wrong password for a real account #2" id="4692ef9f-b653-4c3b-904d-6bb81ef67904" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.229">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.229" classname="03Unauthenticated401WrongPasswordForARealAccount2"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.229" classname="03Unauthenticated401WrongPasswordForARealAccount2"/>
+    <testcase name="401 INVALID_CREDENTIALS" time="0.229" classname="03Unauthenticated401WrongPasswordForARealAccount2"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / Unknown email #2" id="647b4321-11bc-42ce-ac11-7904218af960" timestamp="2026-11-17T15:46:56.348Z" tests="4" failures="0" errors="0" time="0.226">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.226" classname="03Unauthenticated401UnknownEmail2"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.226" classname="03Unauthenticated401UnknownEmail2"/>
+    <testcase name="401 INVALID_CREDENTIALS" time="0.226" classname="03Unauthenticated401UnknownEmail2"/>
+    <testcase name="same message as a wrong password" time="0.226" classname="03Unauthenticated401UnknownEmail2"/>
+  </testsuite>
+  <testsuite name="03 Unauthenticated (401) / [H] Timing: unknown email is not noticeably faster" id="52852f20-b007-4b4b-9113-3955279824e6" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.012">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.012" classname="03Unauthenticated401HTimingUnknownEmailIsNotNoticeablyFaster"/>
+    <testcase name="[H] unknown-email login takes at least 50% of a wrong-password login (226 ms vs 227 ms)" time="0.012" classname="03Unauthenticated401HTimingUnknownEmailIsNotNoticeablyFaster"/>
+  </testsuite>
+  <testsuite name="04 Forbidden (403) / Requester tries to approve" id="9daf9eeb-5ca0-4d3c-bad5-8670250edd2c" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="04Forbidden403RequesterTriesToApprove"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="04Forbidden403RequesterTriesToApprove"/>
+    <testcase name="403 FORBIDDEN" time="0.007" classname="04Forbidden403RequesterTriesToApprove"/>
+  </testsuite>
+  <testsuite name="04 Forbidden (403) / Requester opens the review queue" id="e3693f10-52ad-49c9-9be1-b86859a7f2c5" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="04Forbidden403RequesterOpensTheReviewQueue"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="04Forbidden403RequesterOpensTheReviewQueue"/>
+    <testcase name="403 FORBIDDEN" time="0.007" classname="04Forbidden403RequesterOpensTheReviewQueue"/>
+  </testsuite>
+  <testsuite name="04 Forbidden (403) / Requester opens automation metrics" id="601b90bc-113d-44c2-aad0-03724b9a462e" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="04Forbidden403RequesterOpensAutomationMetrics"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="04Forbidden403RequesterOpensAutomationMetrics"/>
+    <testcase name="403 FORBIDDEN" time="0.007" classname="04Forbidden403RequesterOpensAutomationMetrics"/>
+  </testsuite>
+  <testsuite name="04 Forbidden (403) / Approver tries to release" id="a4ba2771-78ee-44d3-9b5f-0a8b9c44be97" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="04Forbidden403ApproverTriesToRelease"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="04Forbidden403ApproverTriesToRelease"/>
+    <testcase name="403 FORBIDDEN" time="0.008" classname="04Forbidden403ApproverTriesToRelease"/>
+  </testsuite>
+  <testsuite name="04 Forbidden (403) / Custodian tries to submit a request" id="b67a478a-b73b-41af-9e16-f3e65e90f88e" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="04Forbidden403CustodianTriesToSubmitARequest"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="04Forbidden403CustodianTriesToSubmitARequest"/>
+    <testcase name="403 FORBIDDEN" time="0.008" classname="04Forbidden403CustodianTriesToSubmitARequest"/>
+  </testsuite>
+  <testsuite name="04 Forbidden (403) / Approver tries to acknowledge" id="17ad5b00-71d7-43eb-a0b6-ecdcaa66db4e" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="04Forbidden403ApproverTriesToAcknowledge"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="04Forbidden403ApproverTriesToAcknowledge"/>
+    <testcase name="403 FORBIDDEN" time="0.007" classname="04Forbidden403ApproverTriesToAcknowledge"/>
+  </testsuite>
+  <testsuite name="05 Not found (404/405) / Request that does not exist" id="1db4df97-93b3-493e-b4f4-d442da231d32" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="05NotFound404405RequestThatDoesNotExist"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="05NotFound404405RequestThatDoesNotExist"/>
+    <testcase name="404 NOT_FOUND" time="0.008" classname="05NotFound404405RequestThatDoesNotExist"/>
+  </testsuite>
+  <testsuite name="05 Not found (404/405) / Another requester's request" id="f4933a63-412c-4c50-b2f9-ec9fd8cada97" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.010">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.010" classname="05NotFound404405AnotherRequestersRequest"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.010" classname="05NotFound404405AnotherRequestersRequest"/>
+    <testcase name="404 NOT_FOUND" time="0.010" classname="05NotFound404405AnotherRequestersRequest"/>
+  </testsuite>
+  <testsuite name="05 Not found (404/405) / Download another requester's certificate" id="400e29c1-4ffa-429f-a3b3-06e022b68570" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="05NotFound404405DownloadAnotherRequestersCertificate"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="05NotFound404405DownloadAnotherRequestersCertificate"/>
+    <testcase name="404 NOT_FOUND" time="0.008" classname="05NotFound404405DownloadAnotherRequestersCertificate"/>
+  </testsuite>
+  <testsuite name="05 Not found (404/405) / Acknowledge another requester's certificate" id="36a59342-a56f-4681-8e92-6d91c86d0843" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="05NotFound404405AcknowledgeAnotherRequestersCertificate"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="05NotFound404405AcknowledgeAnotherRequestersCertificate"/>
+    <testcase name="404 NOT_FOUND" time="0.008" classname="05NotFound404405AcknowledgeAnotherRequestersCertificate"/>
+  </testsuite>
+  <testsuite name="05 Not found (404/405) / Unknown route" id="6d3b7c72-9546-4656-bdae-40f4e145e0fc" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.005">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.005" classname="05NotFound404405UnknownRoute"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.005" classname="05NotFound404405UnknownRoute"/>
+    <testcase name="404 NOT_FOUND" time="0.005" classname="05NotFound404405UnknownRoute"/>
+  </testsuite>
+  <testsuite name="05 Not found (404/405) / Wrong HTTP method" id="f5692e97-bef5-43d6-b75a-7a6f9f87ed81" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.005">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.005" classname="05NotFound404405WrongHttpMethod"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.005" classname="05NotFound404405WrongHttpMethod"/>
+    <testcase name="405 METHOD_NOT_ALLOWED" time="0.005" classname="05NotFound404405WrongHttpMethod"/>
+  </testsuite>
+  <testsuite name="06 Duplicate and conflict (409) / Same Idempotency-Key, same body (retry)" id="508a3727-eca3-4f36-a932-2ff9b34640ec" timestamp="2026-11-17T15:46:56.348Z" tests="2" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="06DuplicateAndConflict409SameIdempotencyKeySameBodyRetry"/>
+    <testcase name="200 returns the ORIGINAL request" time="0.009" classname="06DuplicateAndConflict409SameIdempotencyKeySameBodyRetry"/>
+  </testsuite>
+  <testsuite name="06 Duplicate and conflict (409) / Same Idempotency-Key, different body" id="8793c80d-2a4b-438a-bb30-0b510012a764" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="06DuplicateAndConflict409SameIdempotencyKeyDifferentBody"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="06DuplicateAndConflict409SameIdempotencyKeyDifferentBody"/>
+    <testcase name="409 DUPLICATE_REQUEST" time="0.007" classname="06DuplicateAndConflict409SameIdempotencyKeyDifferentBody"/>
+  </testsuite>
+  <testsuite name="06 Duplicate and conflict (409) / Approve an already-processed request" id="550e397f-f80c-4b92-92d3-e310979de459" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.009">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="06DuplicateAndConflict409ApproveAnAlreadyProcessedRequest"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.009" classname="06DuplicateAndConflict409ApproveAnAlreadyProcessedRequest"/>
+    <testcase name="409 INVALID_STATE" time="0.009" classname="06DuplicateAndConflict409ApproveAnAlreadyProcessedRequest"/>
+  </testsuite>
+  <testsuite name="06 Duplicate and conflict (409) / Release twice" id="e4fbc596-362b-40b5-9efa-e415546bc1d8" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="06DuplicateAndConflict409ReleaseTwice"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="06DuplicateAndConflict409ReleaseTwice"/>
+    <testcase name="409 INVALID_STATE" time="0.008" classname="06DuplicateAndConflict409ReleaseTwice"/>
+  </testsuite>
+  <testsuite name="06 Duplicate and conflict (409) / Requeue an item that is not in review" id="e2e43178-ca4f-4b9d-bfbf-6d29f0262b92" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.008">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.008" classname="06DuplicateAndConflict409RequeueAnItemThatIsNotInReview"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.008" classname="06DuplicateAndConflict409RequeueAnItemThatIsNotInReview"/>
+    <testcase name="409 INVALID_STATE" time="0.008" classname="06DuplicateAndConflict409RequeueAnItemThatIsNotInReview"/>
+  </testsuite>
+  <testsuite name="07 Hardening checks / [H] Security headers on an authenticated response" id="863118a9-7977-4955-9ec2-861c4beabdf0" timestamp="2026-11-17T15:46:56.348Z" tests="8" failures="0" errors="0" time="0.007">
+    <testcase name="200" time="0.007" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse"/>
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse"/>
+    <testcase name="[H] Cache-Control: no-store" time="0.007" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse"/>
+    <testcase name="[H] X-Frame-Options: DENY" time="0.007" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse"/>
+    <testcase name="[H] Content-Security-Policy: default-src 'none'" time="0.007" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse"/>
+    <testcase name="[H] Referrer-Policy: no-referrer" time="0.007" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse"/>
+    <testcase name="X-Content-Type-Options: nosniff" time="0.007" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse"/>
+    <testcase name="[H] no X-Powered-By (PHP version not disclosed)" time="0.007" classname="07HardeningChecksHSecurityHeadersOnAnAuthenticatedResponse"/>
+  </testsuite>
+  <testsuite name="07 Hardening checks / [H] Security headers on an error response" id="c189470d-8700-4c44-a8c7-cc3199ed72bf" timestamp="2026-11-17T15:46:56.348Z" tests="5" failures="0" errors="0" time="0.007">
+    <testcase name="404" time="0.007" classname="07HardeningChecksHSecurityHeadersOnAnErrorResponse"/>
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="07HardeningChecksHSecurityHeadersOnAnErrorResponse"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="07HardeningChecksHSecurityHeadersOnAnErrorResponse"/>
+    <testcase name="[H] Cache-Control: no-store" time="0.007" classname="07HardeningChecksHSecurityHeadersOnAnErrorResponse"/>
+    <testcase name="[H] no X-Powered-By" time="0.007" classname="07HardeningChecksHSecurityHeadersOnAnErrorResponse"/>
+  </testsuite>
+  <testsuite name="07 Hardening checks / [H] Request list is paginated (no silent cut-off)" id="751fa09b-b941-4dea-b6a5-2ef9ab7c0697" timestamp="2026-11-17T15:46:56.348Z" tests="4" failures="0" errors="0" time="0.009">
+    <testcase name="200" time="0.009" classname="07HardeningChecksHRequestListIsPaginatedNoSilentCutOff"/>
+    <testcase name="[global] response has an X-Correlation-ID" time="0.009" classname="07HardeningChecksHRequestListIsPaginatedNoSilentCutOff"/>
+    <testcase name="[H] at most 2 items on the page" time="0.009" classname="07HardeningChecksHRequestListIsPaginatedNoSilentCutOff"/>
+    <testcase name="[H] meta.total and meta.last_page tell the client how much exists" time="0.009" classname="07HardeningChecksHRequestListIsPaginatedNoSilentCutOff"/>
+  </testsuite>
+  <testsuite name="07 Hardening checks / [H] Oversized page size is refused" id="0e150482-a09c-48e7-81bd-12d6d40ab85b" timestamp="2026-11-17T15:46:56.348Z" tests="3" failures="0" errors="0" time="0.007">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.007" classname="07HardeningChecksHOversizedPageSizeIsRefused"/>
+    <testcase name="[global] error uses the safe format (code, message, correlation_id; no stack trace)" time="0.007" classname="07HardeningChecksHOversizedPageSizeIsRefused"/>
+    <testcase name="422 VALIDATION_FAILED" time="0.007" classname="07HardeningChecksHOversizedPageSizeIsRefused"/>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,175 @@
+(node:86868) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+newman
+
+Certificate Generation Queue – Week 15 integration tests
+
+❏ 09 Timeout (generator slow)
+↳ Requester submits
+  POST https://localhost:8443/api/v1/requests [201 Created, 911B, 33ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  201 created as submitted
+
+↳ Approver approves
+  POST https://localhost:8443/api/v1/requests/47/approve [202 Accepted, 1.02kB, 12ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  202 accepted and queued
+
+↳ Poll until generated (timeout, then retry)
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 1.59kB, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated (timeout, then retry)
+
+↳ Poll until generated (timeout, then retry)
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 1.79kB, 31ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated (timeout, then retry)
+
+↳ Poll until generated (timeout, then retry)
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 1.79kB, 28ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated (timeout, then retry)
+
+↳ Poll until generated (timeout, then retry)
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 1.79kB, 21ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated (timeout, then retry)
+
+↳ Poll until generated (timeout, then retry)
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 1.79kB, 32ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated (timeout, then retry)
+
+↳ Poll until generated (timeout, then retry)
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 1.79kB, 23ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated (timeout, then retry)
+
+↳ Poll until generated (timeout, then retry)
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 2.09kB, 27ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated (timeout, then retry)
+
+↳ Poll until generated (timeout, then retry)
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 2.09kB, 25ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated (timeout, then retry)
+
+↳ Poll until generated (timeout, then retry)
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 2.09kB, 28ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated (timeout, then retry)
+
+↳ Poll until generated (timeout, then retry)
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 2.09kB, 24ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated (timeout, then retry)
+
+↳ Poll until generated (timeout, then retry)
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 2.09kB, 30ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated (timeout, then retry)
+
+↳ Poll until generated (timeout, then retry)
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 2.09kB, 23ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated (timeout, then retry)
+
+↳ Poll until generated (timeout, then retry)
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 2.69kB, 31ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Poll until generated (timeout, then retry): status=ge
+  │ nerated attempts=2 polls=13'
+  └
+  ✓  reaches generated (status=generated, attempts=2)
+  ✓  needed more than one attempt (the first timed out)
+  ✓  exactly one certificate
+
+↳ History shows a retry was scheduled after the timeout
+  GET https://localhost:8443/api/v1/requests/47 [200 OK, 2.69kB, 12ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  a retry was scheduled
+  ✓  the reason mentions the timeout
+  ✓  generated exactly once
+
+┌─────────────────────────┬──────────────────┬─────────────────┐
+│                         │         executed │          failed │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│              iterations │                1 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│                requests │               16 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│            test-scripts │               32 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│      prerequest-scripts │               14 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│              assertions │               24 │               0 │
+├─────────────────────────┴──────────────────┴─────────────────┤
+│ total run duration: 24.7s                                    │
+├──────────────────────────────────────────────────────────────┤
+│ total data received: 21.82kB (approx)                        │
+├──────────────────────────────────────────────────────────────┤
+│ average response time: 24ms [min: 9ms, max: 33ms, s.d.: 7ms] │
+└──────────────────────────────────────────────────────────────┘
+newman exit code: 0

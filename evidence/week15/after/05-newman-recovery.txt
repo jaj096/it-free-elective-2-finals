@@ -1,0 +1,62 @@
+(node:86913) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+newman
+
+Certificate Generation Queue – Week 15 integration tests
+
+❏ 10 Recovery
+↳ Health shows the generator is back
+  GET https://localhost:8443/api/v1/health [200 OK, 638B, 42ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  generator ok
+
+↳ Approver re-queues the failed item
+  POST https://localhost:8443/api/v1/requests/46/requeue [202 Accepted, 1.03kB, 13ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  202 queued, attempts reset
+
+↳ Poll until generated
+  GET https://localhost:8443/api/v1/requests/46 [200 OK, 3.15kB, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated
+
+↳ Poll until generated
+  GET https://localhost:8443/api/v1/requests/46 [200 OK, 3.81kB, 33ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Poll until generated: status=generated attempts=1 pol
+  │ ls=2'
+  └
+  ✓  reaches generated (status=generated, attempts=1)
+  ✓  exactly one certificate
+
+↳ History shows failure then recovery
+  GET https://localhost:8443/api/v1/requests/46 [200 OK, 3.81kB, 13ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  history contains sent_to_review, then requeued, then generation_succeeded
+
+┌─────────────────────────┬──────────────────┬──────────────────┐
+│                         │         executed │           failed │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              iterations │                1 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│                requests │                5 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│            test-scripts │               10 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│      prerequest-scripts │                2 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              assertions │               10 │                0 │
+├─────────────────────────┴──────────────────┴──────────────────┤
+│ total run duration: 2.2s                                      │
+├───────────────────────────────────────────────────────────────┤
+│ total data received: 9.81kB (approx)                          │
+├───────────────────────────────────────────────────────────────┤
+│ average response time: 22ms [min: 9ms, max: 42ms, s.d.: 13ms] │
+└───────────────────────────────────────────────────────────────┘
+newman exit code: 0

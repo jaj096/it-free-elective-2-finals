@@ -1,0 +1,20 @@
+# T1 investigation: why the 'slow' (timeout) case ended in generated on attempt 2, not needs_review
+# Request #17 (baseline run, 2026-11-17), generation_key 834d56d0-1e18-4829-a160-0cdd4b59bcb3
+
+## Audit history (backend database)
+2026-11-17 23:31:01  submitted                    attempt=-  
+2026-11-17 23:31:01  approved                     attempt=-  
+2026-11-17 23:31:01  queued                       attempt=-  
+2026-11-17 23:31:02  generation_started           attempt=1  
+2026-11-17 23:31:12  generation_retry_scheduled   attempt=1  Generator did not respond in time or could not be reached.
+2026-11-17 23:31:24  generation_started           attempt=2  
+2026-11-17 23:31:24  generation_succeeded         attempt=2  
+
+## Generator log (generator-service/storage/generator.log)
+{"timestamp":"2026-11-17T23:31:17+08:00","service":"generator","event":"generate.succeeded","mode":"slow","job_key":"834d56d0-1e18-4829-a160-0cdd4b59bcb3","attempt":1,"bytes":1138}
+{"timestamp":"2026-11-17T23:31:24+08:00","service":"generator","event":"generate.replayed","job_key":"834d56d0-1e18-4829-a160-0cdd4b59bcb3","correlation_id":"c-fdw48rti"}
+
+## Interpretation
+Backend timeout is 10 s; the generator sleeps 15 s. Attempt 1 timed out in the backend (retry scheduled),
+but the generator finished it at 23:31:17 and stored the PDF under the job_key. Attempt 2 got the stored
+PDF back (generate.replayed) => one certificate, no duplicate. The system was right; the test prediction was wrong.

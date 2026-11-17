@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Certificate Generation Queue – Week 15 integration tests" tests="16" time="0.389">
+  <testsuite name="09 Timeout (generator slow) / Requester submits" id="8972c435-b39a-477e-b160-8407f71ffc03" timestamp="2026-11-17T15:47:52.845Z" tests="2" failures="0" errors="0" time="0.033">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.033" classname="09TimeoutGeneratorSlowRequesterSubmits"/>
+    <testcase name="201 created as submitted" time="0.033" classname="09TimeoutGeneratorSlowRequesterSubmits"/>
+  </testsuite>
+  <testsuite name="09 Timeout (generator slow) / Approver approves" id="9b1f6692-e1cd-42d5-890f-44f8347dddde" timestamp="2026-11-17T15:47:52.845Z" tests="2" failures="0" errors="0" time="0.012">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.012" classname="09TimeoutGeneratorSlowApproverApproves"/>
+    <testcase name="202 accepted and queued" time="0.012" classname="09TimeoutGeneratorSlowApproverApproves"/>
+  </testsuite>
+  <testsuite name="09 Timeout (generator slow) / Poll until generated (timeout, then retry)" id="a06c2f55-0bd8-41ed-80df-0f8c8edaadf3" timestamp="2026-11-17T15:47:52.845Z" tests="4" failures="0" errors="0" time="0.026">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.031" classname="09TimeoutGeneratorSlowPollUntilGeneratedTimeoutThenRetry"/>
+    <testcase name="reaches generated (status=generated, attempts=2)" time="0.031" classname="09TimeoutGeneratorSlowPollUntilGeneratedTimeoutThenRetry"/>
+    <testcase name="needed more than one attempt (the first timed out)" time="0.031" classname="09TimeoutGeneratorSlowPollUntilGeneratedTimeoutThenRetry"/>
+    <testcase name="exactly one certificate" time="0.031" classname="09TimeoutGeneratorSlowPollUntilGeneratedTimeoutThenRetry"/>
+  </testsuite>
+  <testsuite name="09 Timeout (generator slow) / History shows a retry was scheduled after the timeout" id="d8631636-8f1b-4d0b-b0f9-66ceeacaf793" timestamp="2026-11-17T15:47:52.845Z" tests="4" failures="0" errors="0" time="0.012">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.012" classname="09TimeoutGeneratorSlowHistoryShowsARetryWasScheduledAfterTheTimeout"/>
+    <testcase name="a retry was scheduled" time="0.012" classname="09TimeoutGeneratorSlowHistoryShowsARetryWasScheduledAfterTheTimeout"/>
+    <testcase name="the reason mentions the timeout" time="0.012" classname="09TimeoutGeneratorSlowHistoryShowsARetryWasScheduledAfterTheTimeout"/>
+    <testcase name="generated exactly once" time="0.012" classname="09TimeoutGeneratorSlowHistoryShowsARetryWasScheduledAfterTheTimeout"/>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Certificate Generation Queue – Week 15 integration tests" tests="5" time="0.110">
+  <testsuite name="10 Recovery / Health shows the generator is back" id="f809a4c0-d00c-4c80-ba40-24f87fd29b44" timestamp="2026-11-17T15:48:18.728Z" tests="2" failures="0" errors="0" time="0.042">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.042" classname="10RecoveryHealthShowsTheGeneratorIsBack"/>
+    <testcase name="generator ok" time="0.042" classname="10RecoveryHealthShowsTheGeneratorIsBack"/>
+  </testsuite>
+  <testsuite name="10 Recovery / Approver re-queues the failed item" id="e1f7ef8b-9dc6-4359-9b9d-7580cebcdbde" timestamp="2026-11-17T15:48:18.728Z" tests="2" failures="0" errors="0" time="0.013">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.013" classname="10RecoveryApproverReQueuesTheFailedItem"/>
+    <testcase name="202 queued, attempts reset" time="0.013" classname="10RecoveryApproverReQueuesTheFailedItem"/>
+  </testsuite>
+  <testsuite name="10 Recovery / Poll until generated" id="2dabce37-40fe-4516-b9f2-a71856c41e65" timestamp="2026-11-17T15:48:18.728Z" tests="3" failures="0" errors="0" time="0.021">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.033" classname="10RecoveryPollUntilGenerated"/>
+    <testcase name="reaches generated (status=generated, attempts=1)" time="0.033" classname="10RecoveryPollUntilGenerated"/>
+    <testcase name="exactly one certificate" time="0.033" classname="10RecoveryPollUntilGenerated"/>
+  </testsuite>
+  <testsuite name="10 Recovery / History shows failure then recovery" id="bd23eb9b-5c4f-40c9-a2ab-9365b84b8fa9" timestamp="2026-11-17T15:48:18.728Z" tests="2" failures="0" errors="0" time="0.013">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.013" classname="10RecoveryHistoryShowsFailureThenRecovery"/>
+    <testcase name="history contains sent_to_review, then requeued, then generation_succeeded" time="0.013" classname="10RecoveryHistoryShowsFailureThenRecovery"/>
+  </testsuite>
+</testsuites>

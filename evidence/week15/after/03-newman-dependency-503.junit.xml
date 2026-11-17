@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Certificate Generation Queue – Week 15 integration tests" tests="29" time="0.657">
+  <testsuite name="08 Dependency failure (generator 503) / Requester submits" id="83210c88-5eeb-402e-a06f-7c6de3a4c801" timestamp="2026-11-17T15:47:02.274Z" tests="2" failures="0" errors="0" time="0.028">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.028" classname="08DependencyFailureGenerator503RequesterSubmits"/>
+    <testcase name="201 created as submitted" time="0.028" classname="08DependencyFailureGenerator503RequesterSubmits"/>
+  </testsuite>
+  <testsuite name="08 Dependency failure (generator 503) / Approver approves" id="eb4b5362-ef9e-45d3-93d3-67e48c3ab6fb" timestamp="2026-11-17T15:47:02.274Z" tests="2" failures="0" errors="0" time="0.014">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.014" classname="08DependencyFailureGenerator503ApproverApproves"/>
+    <testcase name="202 accepted and queued" time="0.014" classname="08DependencyFailureGenerator503ApproverApproves"/>
+  </testsuite>
+  <testsuite name="08 Dependency failure (generator 503) / Poll until needs_review" id="323e01f0-1fdc-4007-8d6f-a09c344029bf" timestamp="2026-11-17T15:47:02.274Z" tests="4" failures="0" errors="0" time="0.024">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.021" classname="08DependencyFailureGenerator503PollUntilNeedsReview"/>
+    <testcase name="reaches needs_review (status=needs_review, attempts=3)" time="0.021" classname="08DependencyFailureGenerator503PollUntilNeedsReview"/>
+    <testcase name="stopped after exactly 3 attempts" time="0.021" classname="08DependencyFailureGenerator503PollUntilNeedsReview"/>
+    <testcase name="staff see the technical reason" time="0.021" classname="08DependencyFailureGenerator503PollUntilNeedsReview"/>
+  </testsuite>
+  <testsuite name="08 Dependency failure (generator 503) / Requester sees a safe message only" id="92ed239c-eb48-4889-9433-e6fe0dc1f87e" timestamp="2026-11-17T15:47:02.274Z" tests="3" failures="0" errors="0" time="0.013">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.013" classname="08DependencyFailureGenerator503RequesterSeesASafeMessageOnly"/>
+    <testcase name="200 needs_review" time="0.013" classname="08DependencyFailureGenerator503RequesterSeesASafeMessageOnly"/>
+    <testcase name="no technical reason shown to the requester" time="0.013" classname="08DependencyFailureGenerator503RequesterSeesASafeMessageOnly"/>
+  </testsuite>
+  <testsuite name="08 Dependency failure (generator 503) / Item is in the review queue" id="4d690832-1ea6-407c-bc78-9d43e0227555" timestamp="2026-11-17T15:47:02.274Z" tests="2" failures="0" errors="0" time="0.010">
+    <testcase name="[global] response has an X-Correlation-ID" time="0.010" classname="08DependencyFailureGenerator503ItemIsInTheReviewQueue"/>
+    <testcase name="200 and contains the failed item" time="0.010" classname="08DependencyFailureGenerator503ItemIsInTheReviewQueue"/>
+  </testsuite>
+</testsuites>

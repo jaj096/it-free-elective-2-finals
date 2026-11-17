@@ -1,6 +1,7 @@
 # Certificate Generation Queue (Project 21)
 
 PFEBSIT 002 Integrative Programming and Technologies 2 · Weeks 13–18 individual project
+(Week 13 automation · Week 14 secure exchange · **Week 15 integration testing and hardening**)
 Jewel Julian · BSIT 3A · University of La Salette, Inc.
 
 Approved certificates must be generated and released **without duplicate or missing output**.
@@ -21,6 +22,9 @@ Approval, verification and release remain human decisions.
 | `scripts/dev-certs.sh`, `Caddyfile` | Week 14: local dev CA + HTTPS reverse proxy |
 | `evidence/` | Evidence index and lab log template (fill this from your own runs); `evidence/week14/` |
 | `docs/week14/` | Week 14 security documents (data flow, requirements, ADR, key lifecycle, tests, activities) |
+| `tests/postman/` | Week 15: Postman collection (66 requests) + environment file (fictional data only) |
+| `scripts/run-week15.sh` | Week 15: runs the collection with Newman (incl. generator failure modes), race probe, audit, tests → `evidence/week15/` |
+| `docs/week15/` | Week 15 documents (test strategy, traceability matrix, failure log, hardening backlog, defects, report, activities) |
 
 ```
 Flutter Web ──HTTPS──▶ Caddy ──▶ Laravel API ──▶ database queue ──▶ queue worker ──HTTPS + signed + encrypted──▶ Caddy ──▶ Generator
@@ -159,6 +163,26 @@ bash scripts/run-evidence.sh          # both weeks;  or: week13 | week14
 It fills `evidence/01-…` to `evidence/07-…` (Week 13) and `evidence/week14/` (Week 14) with API responses and the matching log lines.
 Add your own Flutter screenshots to `evidence/08-flutter-responsive/`.
 
+## Integration tests and hardening (Week 15)
+
+```bash
+PHP_CLI_SERVER_WORKERS=4 php artisan serve --host=127.0.0.1 --port=8000   # (backend) parallel requests for the race test
+bash scripts/run-week15.sh after                                          # ~6 min, needs Node.js (Newman via npx)
+```
+
+The collection covers normal, invalid/boundary, 401, 403, 404/405, duplicate/409, generator 503, generator timeout and
+recovery. It can also be imported into the Postman app (see `docs/week15/README.md`). Baseline vs after:
+**17 failed → 0 failed** assertions, `composer audit` **7 → 0** advisories. Six fixes:
+
+| Fix | Where |
+| --- | --- |
+| W1 Patched Laravel/Symfony (7 advisories) | `backend/composer.lock` |
+| W2 Login takes the same time for unknown emails (no account enumeration) | `AuthController@login` |
+| W3 Broken JSON → 400 `MALFORMED_JSON` (was a misleading 422) | `app/Http/Middleware/RejectMalformedJson.php` |
+| W4 `no-store`, CSP, `X-Frame-Options`, `Referrer-Policy`; no `X-Powered-By` | `app/Http/Middleware/SecurityHeaders.php` |
+| W5 `GET /requests` paginated (`per_page` ≤ 100, `meta.total`); Flutter loads every page | `CertificateRequestController@index`, `ApiClient.listRequests` |
+| W6 Parallel submits with one `Idempotency-Key` → original returned, not 500 | `CertificateRequestController@store` |
+
 ## Reliability rules (where to find them in code)
 
 | Control | Where |
@@ -195,7 +219,7 @@ cd backend
 php artisan test        # or: vendor/bin/phpunit
 ```
 
-59 tests. Week 13 (23): the real queue job through a database queue worker with the generator faked:
+71 tests. Week 13 (23): the real queue job through a database queue worker with the generator faked:
 normal success, transient recovery, permanent failure, retry limit, missing ID number, duplicate jobs,
 sweeper, login/rate limit, validation, 401/403/404/409, idempotency key, full lifecycle, tamper detection
 and insert-only audit log.
@@ -204,7 +228,10 @@ Week 14 (36): `SecureExchangeTest` and `SecurityTestCommandTest` start the **rea
 and test every attack end to end; `AtRestEncryptionTest` (ciphertext in DB, key rotation); `ApiSecurityTest`
 (expired token, HTTPS only, proxy trust, roles, download integrity).
 
-Flutter: `cd frontend_flutter && flutter test` (12 tests, including safe security messages).
+Week 15 (12): `HardeningTest`, one or more tests per fix (W2–W6), each failing on the pre-fix code
+(`evidence/week15/hardening-tests-on-old-code.txt`).
+
+Flutter: `cd frontend_flutter && flutter test` (14 tests, including safe security messages and pagination).
 
 ## Security notes
 
@@ -224,6 +251,8 @@ Flutter: `cd frontend_flutter && flutter test` (12 tests, including safe securit
 
 - The generator is a mock; its timing does not represent a real PDF service.
 - Database queue driver and a single worker: fine for one office, not load-tested (Week 16).
+- The parallel duplicate-submit race (Week 15, W6) was fixed and tested in PHPUnit but not reproduced live on SQLite.
+- Login rate limit is per email + IP; there is no overall per-IP limit yet (Week 15 backlog B1).
 - Notifications are in-app only.
 - Certificate PDFs are not yet encrypted on disk (backend and generator) and carry no digital signature.
 - Local HTTPS uses a self-made development CA; production needs a public certificate.

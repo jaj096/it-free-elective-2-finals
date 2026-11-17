@@ -1,0 +1,370 @@
+(node:86723) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+newman
+
+Certificate Generation Queue – Week 15 integration tests
+
+❏ 00 Setup
+↳ Health
+  GET https://localhost:8443/api/v1/health [200 OK, 638B, 30ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200, database ok
+  ✓  generator reachable
+
+↳ Login approver
+  POST https://localhost:8443/api/v1/auth/login [200 OK, 758B, 230ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 and a token
+
+↳ Login custodian
+  POST https://localhost:8443/api/v1/auth/login [200 OK, 768B, 227ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 and a token
+
+↳ Login juan
+  POST https://localhost:8443/api/v1/auth/login [200 OK, 756B, 227ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 and a token
+
+↳ Login maria
+  POST https://localhost:8443/api/v1/auth/login [200 OK, 755B, 228ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 and a token
+
+❏ 01 Normal path
+↳ Requester submits (with Idempotency-Key)
+  POST https://localhost:8443/api/v1/requests [201 Created, 927B, 11ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  201 created as submitted
+
+↳ Save the key used
+  GET https://localhost:8443/api/v1/auth/me [200 OK, 648B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 me
+
+↳ Approver approves
+  POST https://localhost:8443/api/v1/requests/43/approve [202 Accepted, 1.04kB, 12ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  202 accepted and queued
+
+↳ Poll until generated
+  GET https://localhost:8443/api/v1/requests/43 [200 OK, 1.6kB, 10ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Using "postman.setNextRequest" is deprecated. Use "pm
+  │ .execution.setNextRequest()" instead.'
+  └
+
+Attempting to set next request to Poll until generated
+
+↳ Poll until generated
+  GET https://localhost:8443/api/v1/requests/43 [200 OK, 2.26kB, 30ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'Poll until generated: status=generated attempts=1 pol
+  │ ls=2'
+  └
+  ✓  reaches generated (status=generated, attempts=1)
+  ✓  generated on attempt 1
+
+↳ Custodian verifies
+  POST https://localhost:8443/api/v1/certificates/10/verify [200 OK, 1.35kB, 18ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 verified
+
+↳ Custodian releases
+  POST https://localhost:8443/api/v1/certificates/10/release [200 OK, 1.37kB, 16ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 released
+
+↳ Requester downloads PDF
+  GET https://localhost:8443/api/v1/certificates/10/download [200 OK, 1.83kB, 10ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 application/pdf
+  ✓  X-Content-SHA256 matches the hash recorded at generation
+  ✓  [H] PDF is not cached (Cache-Control: no-store)
+
+↳ Requester acknowledges
+  POST https://localhost:8443/api/v1/certificates/10/acknowledge [200 OK, 1.19kB, 11ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 acknowledged
+
+↳ Requester lists own requests
+  GET https://localhost:8443/api/v1/requests [200 OK, 11.2kB, 10ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 and includes the new request
+  ✓  only own requests (no requester block for requesters)
+
+❏ 02 Invalid and boundary input
+↳ Missing certificate_type
+  POST https://localhost:8443/api/v1/requests [422 Unprocessable Entity, 719B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+  ✓  names the field
+
+↳ Unknown certificate_type
+  POST https://localhost:8443/api/v1/requests [422 Unprocessable Entity, 725B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+
+↳ Purpose 4 characters (below minimum)
+  POST https://localhost:8443/api/v1/requests [422 Unprocessable Entity, 722B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+  ✓  names purpose
+
+↳ Purpose exactly 5 characters (boundary, accepted)
+  POST https://localhost:8443/api/v1/requests [201 Created, 888B, 10ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  201 created
+
+↳ Purpose exactly 255 characters (boundary, accepted)
+  POST https://localhost:8443/api/v1/requests [201 Created, 1.15kB, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  201 created
+
+↳ Purpose 256 characters (above maximum)
+  POST https://localhost:8443/api/v1/requests [422 Unprocessable Entity, 742B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+
+↳ Malformed JSON body
+  POST https://localhost:8443/api/v1/requests [400 Bad Request, 657B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  400 MALFORMED_JSON
+  ✓  does not pretend fields are missing
+
+↳ Invalid Idempotency-Key format
+  POST https://localhost:8443/api/v1/requests [400 Bad Request, 643B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  400 BAD_REQUEST
+
+↳ Unknown status filter
+  GET https://localhost:8443/api/v1/requests?status=bogus [422 Unprocessable Entity, 714B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+
+↳ Reject without a reason
+  POST https://localhost:8443/api/v1/requests/43/reject [422 Unprocessable Entity, 712B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+
+↳ Verify with the wrong certificate number
+  POST https://localhost:8443/api/v1/certificates/10/verify [422 Unprocessable Entity, 668B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+
+❏ 03 Unauthenticated (401)
+↳ No token
+  GET https://localhost:8443/api/v1/requests [401 Unauthorized, 593B, 5ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  401 UNAUTHENTICATED
+
+↳ Made-up token
+  GET https://localhost:8443/api/v1/auth/me [401 Unauthorized, 593B, 6ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  401 UNAUTHENTICATED
+
+↳ Wrong password for a real account #1
+  POST https://localhost:8443/api/v1/auth/login [401 Unauthorized, 655B, 225ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  401 INVALID_CREDENTIALS
+
+↳ Unknown email #1
+  POST https://localhost:8443/api/v1/auth/login [401 Unauthorized, 655B, 226ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  401 INVALID_CREDENTIALS
+  ✓  same message as a wrong password
+
+↳ Wrong password for a real account #2
+  POST https://localhost:8443/api/v1/auth/login [401 Unauthorized, 655B, 229ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  401 INVALID_CREDENTIALS
+
+↳ Unknown email #2
+  POST https://localhost:8443/api/v1/auth/login [401 Unauthorized, 655B, 226ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  401 INVALID_CREDENTIALS
+  ✓  same message as a wrong password
+
+↳ [H] Timing: unknown email is not noticeably faster
+  GET https://localhost:8443/api/v1/health [200 OK, 638B, 12ms]
+  ✓  [global] response has an X-Correlation-ID
+  ┌
+  │ 'login timing ms: wrong password avg=227, unknown emai
+  │ l avg=226'
+  └
+  ✓  [H] unknown-email login takes at least 50% of a wrong-password login (226 ms vs 227 ms)
+
+❏ 04 Forbidden (403)
+↳ Requester tries to approve
+  POST https://localhost:8443/api/v1/requests/43/approve [403 Forbidden, 652B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  403 FORBIDDEN
+
+↳ Requester opens the review queue
+  GET https://localhost:8443/api/v1/review-queue [403 Forbidden, 652B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  403 FORBIDDEN
+
+↳ Requester opens automation metrics
+  GET https://localhost:8443/api/v1/automation/jobs [403 Forbidden, 652B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  403 FORBIDDEN
+
+↳ Approver tries to release
+  POST https://localhost:8443/api/v1/certificates/10/release [403 Forbidden, 652B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  403 FORBIDDEN
+
+↳ Custodian tries to submit a request
+  POST https://localhost:8443/api/v1/requests [403 Forbidden, 652B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  403 FORBIDDEN
+
+↳ Approver tries to acknowledge
+  POST https://localhost:8443/api/v1/certificates/10/acknowledge [403 Forbidden, 652B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  403 FORBIDDEN
+
+❏ 05 Not found (404/405)
+↳ Request that does not exist
+  GET https://localhost:8443/api/v1/requests/99999999 [404 Not Found, 648B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  404 NOT_FOUND
+
+↳ Another requester's request
+  GET https://localhost:8443/api/v1/requests/43 [404 Not Found, 648B, 10ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  404 NOT_FOUND
+
+↳ Download another requester's certificate
+  GET https://localhost:8443/api/v1/certificates/10/download [404 Not Found, 648B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  404 NOT_FOUND
+
+↳ Acknowledge another requester's certificate
+  POST https://localhost:8443/api/v1/certificates/10/acknowledge [404 Not Found, 648B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  404 NOT_FOUND
+
+↳ Unknown route
+  GET https://localhost:8443/api/v1/does-not-exist [404 Not Found, 596B, 5ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  404 NOT_FOUND
+
+↳ Wrong HTTP method
+  DELETE https://localhost:8443/api/v1/requests/43 [405 Method Not Allowed, 613B, 5ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  405 METHOD_NOT_ALLOWED
+
+❏ 06 Duplicate and conflict (409)
+↳ Same Idempotency-Key, same body (retry)
+  POST https://localhost:8443/api/v1/requests [200 OK, 913B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200 returns the ORIGINAL request
+
+↳ Same Idempotency-Key, different body
+  POST https://localhost:8443/api/v1/requests [409 Conflict, 680B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  409 DUPLICATE_REQUEST
+
+↳ Approve an already-processed request
+  POST https://localhost:8443/api/v1/requests/43/approve [409 Conflict, 679B, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  409 INVALID_STATE
+
+↳ Release twice
+  POST https://localhost:8443/api/v1/certificates/10/release [409 Conflict, 679B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  409 INVALID_STATE
+
+↳ Requeue an item that is not in review
+  POST https://localhost:8443/api/v1/requests/43/requeue [409 Conflict, 679B, 8ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  409 INVALID_STATE
+
+❏ 07 Hardening checks
+↳ [H] Security headers on an authenticated response
+  GET https://localhost:8443/api/v1/auth/me [200 OK, 648B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200
+  ✓  [H] Cache-Control: no-store
+  ✓  [H] X-Frame-Options: DENY
+  ✓  [H] Content-Security-Policy: default-src 'none'
+  ✓  [H] Referrer-Policy: no-referrer
+  ✓  X-Content-Type-Options: nosniff
+  ✓  [H] no X-Powered-By (PHP version not disclosed)
+
+↳ [H] Security headers on an error response
+  GET https://localhost:8443/api/v1/requests/99999999 [404 Not Found, 648B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  404
+  ✓  [H] Cache-Control: no-store
+  ✓  [H] no X-Powered-By
+
+↳ [H] Request list is paginated (no silent cut-off)
+  GET https://localhost:8443/api/v1/requests?per_page=2&page=1 [200 OK, 3.45kB, 9ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  200
+  ✓  [H] at most 2 items on the page
+  ✓  [H] meta.total and meta.last_page tell the client how much exists
+
+↳ [H] Oversized page size is refused
+  GET https://localhost:8443/api/v1/requests?per_page=1000 [422 Unprocessable Entity, 733B, 7ms]
+  ✓  [global] response has an X-Correlation-ID
+  ✓  [global] error uses the safe format (code, message, correlation_id; no stack trace)
+  ✓  422 VALIDATION_FAILED
+
+┌─────────────────────────┬───────────────────┬──────────────────┐
+│                         │          executed │           failed │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              iterations │                 1 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│                requests │                54 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│            test-scripts │               108 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│      prerequest-scripts │                 3 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              assertions │               160 │                0 │
+├─────────────────────────┴───────────────────┴──────────────────┤
+│ total run duration: 4.9s                                       │
+├────────────────────────────────────────────────────────────────┤
+│ total data received: 27.64kB (approx)                          │
+├────────────────────────────────────────────────────────────────┤
+│ average response time: 41ms [min: 5ms, max: 230ms, s.d.: 77ms] │
+└────────────────────────────────────────────────────────────────┘
+newman exit code: 0

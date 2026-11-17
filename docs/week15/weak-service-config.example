@@ -1,0 +1,55 @@
+# ---------------------------------------------------------------------------
+# INTENTIONALLY WEAK configuration for Week 15 Activity 2. DO NOT USE.
+# All values are fake. Reviewed and ranked in 08-activity2-hardening-sprint.md.
+# Line numbers below are referenced as C1..C14 in that document.
+# ---------------------------------------------------------------------------
+
+# C1
+APP_ENV=production
+APP_DEBUG=true
+# C2
+APP_KEY=base64:RkFLRS1XRUFLLUFQUC1LRVktRE8tTk9ULVVTRS0wMDA=
+# C3
+APP_URL=http://certs.example.test
+
+# C4
+LOG_LEVEL=debug
+LOG_REQUEST_BODIES=true
+
+# C5
+DB_CONNECTION=mysql
+DB_HOST=0.0.0.0
+DB_USERNAME=root
+DB_PASSWORD=
+
+# C6
+BCRYPT_ROUNDS=4
+
+# C7
+SANCTUM_EXPIRATION=null
+
+# C8
+CORS_ALLOWED_ORIGINS=*
+
+# C9
+LOGIN_RATE_LIMIT_PER_MINUTE=1000
+
+# C10
+GENERATOR_URL=http://generator.example.test
+GENERATOR_REQUIRE_HTTPS=false
+GENERATOR_CA_BUNDLE=
+GENERATOR_VERIFY_TLS=false
+
+# C11
+GENERATOR_ENCRYPTION_KEY=base64:RkFLRS1TQU1FLUtFWS1GT1ItQk9USC1ETy1OT1QtVVNF
+GENERATOR_SIGNING_KEY=base64:RkFLRS1TQU1FLUtFWS1GT1ItQk9USC1ETy1OT1QtVVNF
+
+# C12
+GENERATOR_TIMEOUT=0
+CERT_MAX_ATTEMPTS=0
+
+# C13 (php.ini)
+expose_php=On
+
+# C14 (web server)
+# no Cache-Control / CSP / X-Frame-Options headers; directory listing on for /storage

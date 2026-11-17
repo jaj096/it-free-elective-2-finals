@@ -1,0 +1,2 @@
+No security vulnerability advisories found.
+composer audit exit code: 0
