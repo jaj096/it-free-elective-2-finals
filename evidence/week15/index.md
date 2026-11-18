@@ -37,13 +37,15 @@ The **expected** results are the collection's assertions, written before the bas
 | `hardening-tests-on-old-code.txt` | The 12 new `HardeningTest` tests run against the code **before** the fixes: 7 failures + 1 error (every W2–W6 test), 4 regression guards pass |
 | `t1-timeout-investigation.txt` | Audit history + generator log showing why the timeout case recovered on attempt 2 (generator replayed the stored PDF) |
 
-## Flutter Web evidence (to add: screenshots by the student)
+## Flutter Web and runner screenshots (`flutter/`)
 
-Put browser screenshots in `evidence/week15/flutter/` and tick them off here:
+Taken by the student on 2026-11-18 against the live system (Chrome, `https://localhost:5000`, API through Caddy).
 
-- [ ] Desktop width: staff request list loads (pagination is invisible to the user: all requests appear)
-- [ ] Narrow width (~390 px): the same list and a request detail are readable and usable
-- [ ] Validation agreement: the "New request" form refuses a 4-character purpose in the browser, **and** the server refuses it too (shown in `02-newman-main.txt`, folder 02)
-- [ ] Error state: a 403 or 404 shows a safe message with a reference (correlation ID), no technical detail
-- [ ] Review state: a `needs_review` item seen as the requester ("staff have been notified") and as staff (reason shown)
-- [ ] Postman app (optional): the collection runner result for folders 00–07
+| Check | Screenshot(s) | Result |
+| --- | --- | --- |
+| Desktop width: staff list loads every request (pagination invisible to the user) | `W15_E01a_Desktop_Staff_List.png`, `W15_E01b_Desktop_Staff_List.png` | ✅ requests #1 to #52 all listed (more than one API page) |
+| Narrow width (iPhone, 393 px): list and detail readable and usable | `W15_E02a_Narrow_List.png`, `W15_E02b_Narrow_Detail.png` | ✅ single column, Approve/Reject reachable, masked ID shown |
+| Validation agreement: 4-character purpose | `W15_E03a_Browser_Refuses.png` (browser), `W15_E03b_Server_Refuses.png` (server 422, `after/02-newman-main.txt` lines 112–117) | ✅ both refuse it |
+| Safe error with a reference | `W15_E06_Newman_Terminal.png` (404 → "error uses the safe format (code, message, correlation_id; no stack trace)") | ✅ at the API. In the browser the app shows a plain message for 403/404 ("You don't have access to this.") and adds the reference only for server errors (500); no technical detail is ever shown |
+| Review state: same item as staff and as requester | `W15_E05a_Staff_Review_Reason.png` (staff: "Requester ID number is missing…"), `W15_E05b_Requester_Review_Reason.png` (requester: "Needs review: staff have been notified") | ✅ reason visible to staff only |
+| Collection runner, folders 00–07 | `W15_E06_Newman_Terminal.png` (Newman, Postman's command-line runner) | ✅ 54 requests, 160 assertions, 0 failed |
